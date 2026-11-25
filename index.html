@@ -1,0 +1,2829 @@
+<title>Kick Up King</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Manrope:wght@400;600;700;800&display=swap">
+<style>
+  :root{
+    --page-bg:#EAF2E2;
+    --sky-top:#BFE4FB;
+    --sky-bottom:#E9F6DE;
+    --turf-1:#2F8F55;
+    --turf-2:#39A363;
+    --turf-line: rgba(255,255,255,0.16);
+    --ink:#16281C;
+    --ink-soft:#517257;
+    --card-bg:#FCFDF8;
+    --card-border:#D7E7CE;
+    --chip-bg:#F1F7EA;
+    --accent:#FF8A3D;
+    --accent-strong:#E4650F;
+    --success:#2FA35A;
+    --danger:#D8483F;
+    --shoe:#233527;
+    --skin:#F0BC85;
+    --jersey:#2F6FED;
+    --jersey-strong:#1F4FC4;
+    --stand-roof:#3E4C57;
+    --stand-1:#7E93A0;
+    --stand-2:#93A7B2;
+    --banner-bg:#1F4FC4;
+    --shadow-color: rgba(20,40,25,0.22);
+    --overlay-bg: #FCFDF8;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --page-bg:#070F0A;
+      --sky-top:#0B1C29;
+      --sky-bottom:#0E2417;
+      --turf-1:#123A24;
+      --turf-2:#164A2C;
+      --turf-line: rgba(255,255,255,0.06);
+      --ink:#EAF3EA;
+      --ink-soft:#9CBA9F;
+      --card-bg:#0F1D14;
+      --card-border:#1F3A27;
+      --chip-bg:#132A1B;
+      --accent:#FFB067;
+      --accent-strong:#FF8A3D;
+      --success:#57D98C;
+      --danger:#FF8079;
+      --shoe:#0A140D;
+      --skin:#C68F5C;
+      --jersey:#5C8DFF;
+      --jersey-strong:#3D6BE0;
+      --stand-roof:#101B24;
+      --stand-1:#233746;
+      --stand-2:#304C5F;
+      --banner-bg:#3D6BE0;
+      --shadow-color: rgba(0,0,0,0.55);
+      --overlay-bg: #0F1D14;
+    }
+  }
+  :root[data-theme="dark"]{
+    --page-bg:#070F0A;
+    --sky-top:#0B1C29;
+    --sky-bottom:#0E2417;
+    --turf-1:#123A24;
+    --turf-2:#164A2C;
+    --turf-line: rgba(255,255,255,0.06);
+    --ink:#EAF3EA;
+    --ink-soft:#9CBA9F;
+    --card-bg:#0F1D14;
+    --card-border:#1F3A27;
+    --chip-bg:#132A1B;
+    --accent:#FFB067;
+    --accent-strong:#FF8A3D;
+    --success:#57D98C;
+    --danger:#FF8079;
+    --shoe:#0A140D;
+    --skin:#C68F5C;
+    --jersey:#5C8DFF;
+    --jersey-strong:#3D6BE0;
+    --stand-roof:#060B0F;
+    --stand-1:#131E27;
+    --stand-2:#1A2933;
+    --banner-bg:#3D6BE0;
+    --shadow-color: rgba(0,0,0,0.55);
+    --overlay-bg: #0F1D14;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  button{ -webkit-tap-highlight-color: transparent; outline: none; }
+  body{
+    background: var(--page-bg);
+    color: var(--ink);
+    font-family: 'Manrope', system-ui, sans-serif;
+    display:flex;
+    justify-content:center;
+    padding: 10px 8px 10px;
+  }
+  .stage{
+    width:100%;
+    max-width: 460px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  header{
+    text-align:center;
+  }
+  h1{
+    font-family:'Bungee', 'Manrope', sans-serif;
+    font-weight:400;
+    font-size: clamp(26px, 7vw, 34px);
+    letter-spacing: 0.5px;
+    color: var(--accent-strong);
+    text-shadow: 2px 2px 0 var(--card-border);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .tagline{
+    margin: 6px 0 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .card{
+    width:100%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 12px;
+    box-shadow: 0 18px 40px -20px var(--shadow-color);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .scoreboard{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 2px 4px;
+  }
+  .stat{ display:flex; flex-direction:column; gap:2px; }
+  .stat .label{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .stat .value{
+    font-family:'Bungee','Manrope',sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-size: 24px;
+    color: var(--ink);
+    line-height:1;
+  }
+  .stat.high .value{ color: var(--accent-strong); font-size:18px; }
+
+  #muteBtn, #pauseBtn, #recordBtn, #langBtn{
+    width:38px; height:38px;
+    border-radius:50%;
+    border:1px solid var(--card-border);
+    background: var(--chip-bg);
+    color: var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    font-size:16px;
+    flex-shrink:0;
+    position:relative;
+  }
+  #langBtn{ font-size:11px; font-weight:800; font-family:'Manrope',sans-serif; letter-spacing:0.02em; }
+  #muteBtn:hover, #pauseBtn:hover, #recordBtn:hover, #langBtn:hover{ border-color: var(--accent); }
+  /* Our own, consistent touch feedback instead of the WebView's default tap
+     highlight, which renders as a stray solid-orange fill on Android and
+     made this one button look mismatched with its two neighbors. */
+  #muteBtn:active, #pauseBtn:active, #recordBtn:active, #langBtn:active{
+    background: color-mix(in srgb, var(--accent) 22%, var(--chip-bg));
+    border-color: var(--accent);
+  }
+  #recordBtn[hidden]{ display:none; }
+  #recordBtn.recording{
+    border-color:#E23B3B;
+    color:#E23B3B;
+    animation: recPulse 1.1s ease-in-out infinite;
+  }
+  #recordBtn .rec-time{
+    position:absolute;
+    top:-8px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:10px;
+    font-weight:700;
+    font-variant-numeric: tabular-nums;
+    background:#E23B3B;
+    color:#fff;
+    border-radius:8px;
+    padding:1px 5px;
+    white-space:nowrap;
+    line-height:1.3;
+  }
+  @keyframes recPulse{
+    0%, 100% { box-shadow: 0 0 0 0 rgba(226,59,59,0.45); }
+    50% { box-shadow: 0 0 0 5px rgba(226,59,59,0); }
+  }
+  .btn-group{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+  .player-tag{
+    align-self:center;
+    font-size:11px;
+    font-weight:800;
+    color: var(--ink-soft);
+  }
+
+  .level-badge{
+    align-self:center;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--chip-bg);
+    border: 1px solid var(--card-border);
+    color: var(--accent-strong);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    transition: transform 160ms, background 160ms;
+  }
+  .level-badge.level-up{
+    background: var(--success);
+    color: #fff;
+    border-color: var(--success);
+    transform: scale(1.08);
+  }
+
+  .level-toast{
+    position:absolute;
+    left:50%; top:18%;
+    transform: translate(-50%, -8px) scale(0.9);
+    background: var(--success);
+    color:#fff;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 15px;
+    text-align:center;
+    box-shadow: 0 12px 26px -10px rgba(0,0,0,0.4);
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 220ms ease, transform 220ms ease;
+    z-index: 5;
+    white-space: nowrap;
+  }
+  .level-toast.show{
+    opacity:1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  .record-toast{
+    top: 30%;
+    background: var(--accent-strong);
+  }
+  .clip-toast{
+    top: 46%;
+    background: #1F2937;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .field-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio: 480 / 640;
+    border-radius: 16px;
+    overflow:hidden;
+    border: 1px solid var(--card-border);
+  }
+  .field-wrap::after{
+    content:"";
+    position:absolute; inset:0;
+    pointer-events:none;
+    box-shadow: inset 0 0 46px rgba(0,0,0,0.20), inset 0 0 3px rgba(0,0,0,0.15);
+  }
+  canvas{
+    display:block;
+    width:100%;
+    height:100%;
+  }
+  canvas:focus{ outline:none; }
+
+  .overlay{
+    position:absolute;
+    inset:0;
+    z-index:10;
+    background: var(--overlay-bg);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    gap:10px;
+    padding: 16px 22px;
+    overflow:hidden;
+  }
+  .overlay[hidden]{ display:none; }
+  .overlay > .btn-row{ flex:0 0 auto; }
+  /* The start screen's content (heading, style picker, rules, button) all
+     scrolls together as one block if it doesn't fit — keeps the play field
+     itself as large as possible instead of being shrunk to guarantee every
+     control fits on screen without scrolling. */
+  .overlay-scroll{
+    flex:1 1 auto;
+    min-height:0;
+    width:100%;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    padding: 6px 0;
+  }
+  .style-pick{ display:flex; flex-direction:column; align-items:center; gap:5px; }
+  .style-pick-label{ font-size:11px; font-weight:800; color: var(--ink-soft); text-transform:uppercase; letter-spacing:0.03em; }
+  .style-picker{ display:flex; gap:10px; }
+  .style-card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:1px;
+    background: var(--chip-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    padding: 4px 8px 6px;
+    cursor:pointer;
+    font-family:'Manrope',sans-serif;
+  }
+  .style-card:hover{ filter: brightness(1.03); }
+  .style-card.selected{
+    border-color: var(--accent-strong);
+    background: var(--card-bg);
+    box-shadow: 0 6px 14px -8px var(--shadow-color);
+  }
+  .style-card canvas{ display:block; width:48px; height:64px; }
+  .name-pick{ display:flex; flex-direction:column; align-items:center; gap:4px; }
+  #playerNameInput{
+    font-family:'Manrope',sans-serif;
+    font-size:13px;
+    font-weight:700;
+    text-align:center;
+    color: var(--ink);
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    width: 190px;
+    max-width: 100%;
+    outline:none;
+  }
+  #playerNameInput:focus{ border-color: var(--accent-strong); }
+  .overlay h2{
+    font-family:'Bungee','Manrope',sans-serif;
+    font-weight:400;
+    font-size:22px;
+    margin:0;
+    color: var(--accent-strong);
+  }
+  .rules{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:13px;
+    color: var(--ink-soft);
+    max-width: 280px;
+  }
+  .rules b{ color: var(--ink); }
+  .go-score{
+    font-family:'Bungee','Manrope',sans-serif;
+    font-size:68px;
+    color: var(--ink);
+    line-height:1;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Re-triggered from JS on every game over (class removed then re-added)
+     so the number always lands with a little punch — this is the one
+     moment the whole run was building to, worth a beat of emphasis,
+     especially since it's often the exact frame someone screenshots or
+     clips to show off. */
+  .go-score.pop{ animation: scorePop 0.42s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes scorePop{
+    0%{ transform:scale(0.55); opacity:0; }
+    60%{ transform:scale(1.12); opacity:1; }
+    100%{ transform:scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .go-score.pop{ animation:none; }
+  }
+  .go-sub{ font-size:13px; color: var(--ink-soft); font-weight:600; }
+  .go-compare{ font-size:14.5px; font-weight:800; min-height:18px; }
+  .go-compare.chase{ color: var(--accent-strong); }
+  .go-compare.beat{ color: var(--success); }
+  .new-record{ color: var(--success); font-weight:800; font-size:13px; }
+
+  button.primary{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:15px;
+    color:#fff;
+    background: var(--accent-strong);
+    border:none;
+    border-radius: 999px;
+    padding: 12px 26px;
+    cursor:pointer;
+    box-shadow: 0 8px 18px -8px var(--shadow-color);
+  }
+  button.primary:hover{ filter: brightness(1.06); }
+  button.primary:active{ transform: translateY(1px); }
+  button.primary:disabled, button.secondary:disabled{
+    opacity:0.45; cursor:default; pointer-events:none;
+  }
+
+  .btn-row{ display:flex; gap:10px; }
+  button.secondary{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:14px;
+    color: var(--ink);
+    background: var(--chip-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 999px;
+    padding: 10px 20px;
+    cursor:pointer;
+  }
+  button.secondary:hover{ filter: brightness(1.05); }
+  button.secondary:active{ transform: translateY(1px); }
+
+  .trickBtn{
+    align-self:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    width:100%;
+    max-width:320px;
+    padding:6px 14px;
+    border-radius:10px;
+    border:1px dashed var(--accent);
+    background: color-mix(in srgb, var(--accent) 16%, var(--chip-bg));
+    color: var(--accent-strong);
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:12px;
+    cursor:pointer;
+    transition: transform 100ms, background 120ms;
+  }
+  .trickBtn .key-hint{ font-weight:600; color: var(--ink-soft); font-size:10px; }
+  .trickBtn:hover{ background: color-mix(in srgb, var(--accent) 26%, var(--chip-bg)); }
+  .trickBtn:active{ transform: translateY(1px); }
+  .trickBtn.active{ background: var(--success); border-color: var(--success); color:#fff; }
+  .trickBtn.active .key-hint{ color: rgba(255,255,255,0.85); }
+
+  /* Plus-shaped d-pad (Đầu on top, Trái/Ngực/Phải on the middle row) instead
+     of a single row — matches a real gamepad layout and is easier to hit
+     the right key on than four buttons crammed side by side. */
+  .dpad{
+    align-self:center;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+      ".    up    ."
+      "left down right";
+    gap:6px;
+    max-width: 260px;
+    width:100%;
+  }
+  .dkey[data-key="ArrowUp"]{ grid-area: up; }
+  .dkey[data-key="ArrowDown"]{ grid-area: down; }
+  .dkey[data-key="ArrowLeft"]{ grid-area: left; }
+  .dkey[data-key="ArrowRight"]{ grid-area: right; }
+  .dkey{
+    height:58px;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    background: var(--chip-bg);
+    color: var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:1px;
+    cursor:pointer;
+    user-select:none;
+    -webkit-user-select:none;
+    touch-action: manipulation;
+    transition: background 120ms, transform 80ms, border-color 120ms;
+  }
+  .dkey .arrow{ font-size:16px; line-height:1; }
+  .dkey .label{ font-size:8px; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; color:var(--ink-soft); }
+  .dkey.active, .dkey:active{ background: var(--accent); border-color: var(--accent-strong); transform: translateY(1px); }
+  .dkey.active .label{ color: var(--ink); }
+  .dkey.cue{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  button:focus-visible, .dkey:focus-visible{
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+</style>
+
+<div class="stage">
+  <header>
+    <h1 id="gameTitle">Vua Tâng Bóng</h1>
+    <p class="tagline" id="tagline">Giữ nhịp, đừng để bóng rơi xuống đất!</p>
+  </header>
+
+  <div class="card" id="gameCard">
+    <div class="scoreboard">
+      <div class="stat">
+        <span class="label" id="scoreLabel">Điểm</span>
+        <span class="value" id="scoreVal">0</span>
+      </div>
+      <div class="stat high">
+        <span class="label" id="highLabel">Kỷ lục</span>
+        <span class="value" id="highVal">0</span>
+      </div>
+      <div class="btn-group">
+        <button id="recordBtn" type="button" aria-label="Quay video màn hình chơi" hidden>🎥</button>
+        <button id="pauseBtn" type="button" aria-label="Tạm dừng">⏸</button>
+        <button id="muteBtn" type="button" aria-label="Bật/tắt âm thanh">🔊</button>
+        <button id="langBtn" type="button" aria-label="Đổi ngôn ngữ">EN</button>
+      </div>
+    </div>
+
+    <div class="player-tag" id="playerTag">🎮 Sư Tử</div>
+    <div class="level-badge" id="levelBadge">Cấp 1 · Mới tập</div>
+
+    <div class="field-wrap" id="fieldWrap">
+      <canvas id="game" width="480" height="640" tabindex="0"></canvas>
+
+      <div class="level-toast" id="levelToast">Lên cấp!</div>
+      <div class="level-toast record-toast" id="recordToast">🏆 Phá kỷ lục cũ!</div>
+      <div class="level-toast clip-toast" id="clipToast">Đã lưu video!</div>
+
+      <div class="overlay" id="startOverlay">
+        <div class="overlay-scroll">
+          <h2 id="startTitle">Sẵn sàng tâng bóng?</h2>
+          <div class="style-pick">
+            <div class="style-pick-label" id="stylePickLabel">Chọn phong cách của bạn</div>
+            <div class="style-picker">
+              <button class="style-card" data-style="A" type="button" aria-label="Sư Tử · #7">
+                <canvas class="style-preview" data-style="A" width="90" height="120"></canvas>
+              </button>
+              <button class="style-card" data-style="B" type="button" aria-label="Cáo Nhỏ · #10">
+                <canvas class="style-preview" data-style="B" width="90" height="120"></canvas>
+              </button>
+            </div>
+            <div class="name-pick">
+              <label class="style-pick-label" id="namePickLabel" for="playerNameInput">Đặt tên cho nhân vật (tuỳ chọn)</label>
+              <input type="text" id="playerNameInput" maxlength="18" autocomplete="off">
+            </div>
+          </div>
+          <div class="rules">
+            <p><b>← / →</b> tâng bằng chân hoặc vai trái / phải (tùy độ cao bóng rơi)</p>
+            <p><b>↑</b> tâng bằng đầu &nbsp;·&nbsp; <b>↓</b> tâng bằng ngực</p>
+            <p><b>0</b> khống chế bóng trên đầu/ngực 1 giây rồi hất lên tâng tiếp</p>
+            <p>Bóng bay tới đâu, bấm đúng phím lúc bóng chạm người — càng lâu càng khó!</p>
+            <p>Phím <b>P</b> hoặc nút ⏸ để tạm dừng khi cần</p>
+          </div>
+          <button class="primary" id="startBtn" type="button">Vào game</button>
+        </div>
+      </div>
+
+      <!-- Landing here doesn't drop the ball yet — the player already sees the
+           whole play screen (scoreboard, d-pad, trick button, idle character)
+           fully settled first, and only presses this to actually kick off the
+           first toss. That removes the "startled — didn't even see the
+           controls yet" problem at its root, instead of trying to race the
+           layout to fit before gameplay begins. -->
+      <div class="overlay" id="readyOverlay" hidden>
+        <h2 id="readyTitle">Sẵn sàng chưa?</h2>
+        <p class="go-sub" id="readySub">Ngó qua các nút điều khiển một lượt rồi bấm Bắt đầu</p>
+        <div class="btn-row">
+          <button class="secondary" id="backBtnReady" type="button">← Chọn lại</button>
+          <button class="primary" id="confirmStartBtn" type="button">Bắt đầu</button>
+        </div>
+      </div>
+
+      <div class="overlay" id="pauseOverlay" hidden>
+        <h2 id="pauseTitle">Tạm dừng</h2>
+        <p class="go-sub" id="pauseSub">Bấm tiếp tục hoặc phím P để chơi lại</p>
+        <div class="btn-row">
+          <button class="secondary" id="backBtnPause" type="button">← Chọn lại</button>
+          <button class="primary" id="resumeBtn" type="button">Tiếp tục</button>
+        </div>
+      </div>
+
+      <div class="overlay" id="overOverlay" hidden>
+        <h2 id="overTitle">Rơi rồi!</h2>
+        <div class="go-score" id="finalScore">0</div>
+        <div class="go-sub" id="overSub">pha tâng bóng</div>
+        <div class="go-compare" id="overCompare"></div>
+        <div class="new-record" id="newRecord" hidden>🏆 Kỷ lục mới!</div>
+        <div class="btn-row">
+          <button class="secondary" id="backBtnOver" type="button">← Chọn lại</button>
+          <button class="primary" id="retryBtn" type="button">Chơi lại</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="trickBtn" id="trickBtn" type="button">
+      <span class="arrow">✦</span> <span id="trickLabel">Khống chế</span> <span class="key-hint" id="trickKeyHint">(phím 0)</span>
+    </button>
+
+    <div class="dpad" aria-hidden="false">
+      <button class="dkey" data-key="ArrowLeft" type="button" aria-label="Chân/Vai trái"><span class="arrow">←</span><span class="label">Trái</span></button>
+      <button class="dkey" data-key="ArrowUp" type="button" aria-label="Đầu"><span class="arrow">↑</span><span class="label">Đầu</span></button>
+      <button class="dkey" data-key="ArrowDown" type="button" aria-label="Ngực"><span class="arrow">↓</span><span class="label">Ngực</span></button>
+      <button class="dkey" data-key="ArrowRight" type="button" aria-label="Chân/Vai phải"><span class="arrow">→</span><span class="label">Phải</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- constants / geometry (logical space 480x640) ----------
+  var W = 480, H = 640;
+  var GROUND_Y = 560;
+  var CENTER_X = 240;
+  var FOOT_HIT_Y = 528;
+  var HEAD_HIT_Y = 222;
+  var SHOULDER_HIT_Y = 288;
+  var CHEST_HIT_Y = 350;
+  var GRAVITY = 850;
+  var BALL_R = 21; // was 28, reduced ~1/4 per feedback that 28 read as too big
+
+  // Each key can cover more than one real contact point now: ← and → each
+  // answer for both a foot (low) and a shoulder (high) on that side, while
+  // ↑ stays the head and ↓ becomes the chest. TARGETS keeps one canonical
+  // spot per key (used for the on-canvas key badge/label); PARTS is the full
+  // list of actual body contact points a toss can be aimed at.
+  var PARTS = {
+    head:          { key: 'ArrowUp',    x: 240, y: HEAD_HIT_Y },
+    chest:         { key: 'ArrowDown',  x: 240, y: CHEST_HIT_Y },
+    footLeft:      { key: 'ArrowLeft',  x: 196, y: FOOT_HIT_Y },
+    footRight:     { key: 'ArrowRight', x: 284, y: FOOT_HIT_Y },
+    shoulderLeft:  { key: 'ArrowLeft',  x: 202, y: SHOULDER_HIT_Y },
+    shoulderRight: { key: 'ArrowRight', x: 278, y: SHOULDER_HIT_Y }
+  };
+  var PART_NAMES = Object.keys(PARTS);
+  var TARGETS = {
+    ArrowLeft:  PARTS.footLeft,
+    ArrowRight: PARTS.footRight,
+    ArrowDown:  PARTS.chest,
+    ArrowUp:    PARTS.head
+  };
+  var ARROW_GLYPH = { ArrowLeft:'←', ArrowRight:'→', ArrowUp:'↑', ArrowDown:'↓' };
+
+  // Fixed once at load (not re-rolled every frame) so the grass texture reads
+  // as organic blades of turf instead of flickering static.
+  var GRASS_FLECKS = (function(){
+    var arr = [];
+    for(var i=0;i<80;i++){
+      arr.push({
+        x: Math.random()*W,
+        y: GROUND_Y + Math.random()*(H-GROUND_Y),
+        w: 8 + Math.random()*16,
+        a: 0.05 + Math.random()*0.09
+      });
+    }
+    return arr;
+  })();
+
+  // Stadium backdrop: a two-tier grandstand packed with a crowd of tiny dots,
+  // fixed once at load for the same reason as GRASS_FLECKS above (no per-frame
+  // flicker) and cheap enough to redraw every frame at this size — the same
+  // budget the grass texture already spends.
+  var CROWD_COLORS = ['#E85D5D','#F2B33D','#4FB0E8','#59C97A','#B478E0','#F2F2F2','#EDD9B4','#8A5A34'];
+  var CROWD = (function(){
+    var arr = [];
+    function fillTier(yStart, yEnd, rowGap, dotR, colGap){
+      for(var y=yStart; y<yEnd; y+=rowGap){
+        for(var x=6; x<W-6; x+=colGap){
+          if(Math.random() < 0.15) continue; // little aisles/gaps in the crowd
+          arr.push({
+            x: x + (Math.random()-0.5)*colGap*0.6,
+            y: y + (Math.random()-0.5)*rowGap*0.5,
+            r: dotR*(0.7+Math.random()*0.6),
+            c: CROWD_COLORS[Math.floor(Math.random()*CROWD_COLORS.length)]
+          });
+        }
+      }
+    }
+    fillTier(20, 84, 9, 2.6, 16);   // upper tier — farther away, smaller/denser
+    fillTier(94, 162, 11, 3.6, 18); // lower tier — closer, a touch bigger
+    return arr;
+  })();
+
+  var canvas = document.getElementById('game');
+  var ctx = canvas.getContext('2d');
+  var fieldWrap = document.getElementById('fieldWrap');
+  var scoreVal = document.getElementById('scoreVal');
+  var highVal = document.getElementById('highVal');
+  var startOverlay = document.getElementById('startOverlay');
+  var readyOverlay = document.getElementById('readyOverlay');
+  var confirmStartBtn = document.getElementById('confirmStartBtn');
+  var backBtnReady = document.getElementById('backBtnReady');
+  var overOverlay = document.getElementById('overOverlay');
+  var overTitle = document.getElementById('overTitle');
+  var finalScoreEl = document.getElementById('finalScore');
+  var overSub = document.getElementById('overSub');
+  var overCompareEl = document.getElementById('overCompare');
+  var newRecord = document.getElementById('newRecord');
+  var startBtn = document.getElementById('startBtn');
+  var retryBtn = document.getElementById('retryBtn');
+  var muteBtn = document.getElementById('muteBtn');
+  var pauseBtn = document.getElementById('pauseBtn');
+  var recordBtn = document.getElementById('recordBtn');
+  var pauseOverlay = document.getElementById('pauseOverlay');
+  var resumeBtn = document.getElementById('resumeBtn');
+  var backBtnPause = document.getElementById('backBtnPause');
+  var backBtnOver = document.getElementById('backBtnOver');
+  var dkeys = Array.prototype.slice.call(document.querySelectorAll('.dkey'));
+  var levelBadge = document.getElementById('levelBadge');
+  var trickBtn = document.getElementById('trickBtn');
+  var levelToast = document.getElementById('levelToast');
+  var recordToast = document.getElementById('recordToast');
+  var clipToast = document.getElementById('clipToast');
+  var langBtn = document.getElementById('langBtn');
+  var gameTitleEl = document.getElementById('gameTitle');
+  var taglineEl = document.getElementById('tagline');
+  var scoreLabelEl = document.getElementById('scoreLabel');
+  var highLabelEl = document.getElementById('highLabel');
+  var startTitleEl = document.getElementById('startTitle');
+  var stylePickLabelEl = document.getElementById('stylePickLabel');
+  var namePickLabelEl = document.getElementById('namePickLabel');
+  var ruleEls = Array.prototype.slice.call(document.querySelectorAll('.rules p'));
+  var readyTitleEl = document.getElementById('readyTitle');
+  var readySubEl = document.getElementById('readySub');
+  var pauseTitleEl = document.getElementById('pauseTitle');
+  var pauseSubEl = document.getElementById('pauseSub');
+  var trickLabelEl = document.getElementById('trickLabel');
+  var trickKeyHintEl = document.getElementById('trickKeyHint');
+
+  // ---------- persistent prefs (per-viewer, best-effort) ----------
+  var highScore = 0, muted = false;
+  try {
+    highScore = parseInt(localStorage.getItem('vtb_high') || '0', 10) || 0;
+    muted = localStorage.getItem('vtb_muted') === '1';
+  } catch(e){}
+  highVal.textContent = highScore;
+  muteBtn.textContent = muted ? '🔇' : '🔊';
+
+  function saveHigh(){
+    try{ localStorage.setItem('vtb_high', String(highScore)); }catch(e){}
+  }
+
+  // ---------- language (vi / en) ----------
+  // All player-facing text lives here, keyed by a short id; applyLanguage()
+  // pushes the current language's strings onto the DOM. Anything the player
+  // typed themselves (a custom character name) is never touched by this.
+  var LANG_STRINGS = {
+    vi: {
+      title: 'Vua Tâng Bóng',
+      tagline: 'Giữ nhịp, đừng để bóng rơi xuống đất!',
+      startTitle: 'Sẵn sàng tâng bóng?',
+      scoreLabel: 'Điểm',
+      highLabel: 'Kỷ lục',
+      recordAriaIdle: 'Quay video màn hình chơi',
+      recordAriaActive: 'Dừng quay video',
+      pauseAria: 'Tạm dừng',
+      resumeAria: 'Tiếp tục',
+      muteAria: 'Bật/tắt âm thanh',
+      langAria: 'Đổi ngôn ngữ',
+      langBtnLabel: 'EN',
+      styleAriaA: 'Sư Tử · #7',
+      styleAriaB: 'Cáo Nhỏ · #10',
+      stylePickLabel: 'Chọn phong cách của bạn',
+      namePickLabel: 'Đặt tên cho nhân vật (tuỳ chọn)',
+      rule1: '<b>← / →</b> tâng bằng chân hoặc vai trái / phải (tùy độ cao bóng rơi)',
+      rule2: '<b>↑</b> tâng bằng đầu &nbsp;·&nbsp; <b>↓</b> tâng bằng ngực',
+      rule3: '<b>0</b> khống chế bóng trên đầu/ngực 1 giây rồi hất lên tâng tiếp',
+      rule4: 'Bóng bay tới đâu, bấm đúng phím lúc bóng chạm người — càng lâu càng khó!',
+      rule5: 'Phím <b>P</b> hoặc nút ⏸ để tạm dừng khi cần',
+      startBtn: 'Vào game',
+      readyTitle: 'Sẵn sàng chưa?',
+      readySub: 'Ngó qua các nút điều khiển một lượt rồi bấm Bắt đầu',
+      backToSelect: '← Chọn lại',
+      confirmStart: 'Bắt đầu',
+      pauseTitle: 'Tạm dừng',
+      pauseSub: 'Bấm tiếp tục hoặc phím P để chơi lại',
+      resumeBtn: 'Tiếp tục',
+      overTitle: 'Rơi rồi!',
+      overSub: 'pha tâng bóng',
+      overCompareChase: 'Cách kỷ lục {record}: còn {diff} điểm nữa!',
+      overCompareBeat: 'Vượt kỷ lục cũ {diff} điểm!',
+      newRecord: '🏆 Kỷ lục mới!',
+      retryBtn: 'Chơi lại',
+      trickLabel: 'Khống chế',
+      trickKeyHint: '(phím 0)',
+      trickCaption: 'Khống chế!',
+      dpadLeftAria: 'Chân/Vai trái',
+      dpadUpAria: 'Đầu',
+      dpadDownAria: 'Ngực',
+      dpadRightAria: 'Chân/Vai phải',
+      dpadLeftLabel: 'Trái',
+      dpadUpLabel: 'Đầu',
+      dpadDownLabel: 'Ngực',
+      dpadRightLabel: 'Phải',
+      levelPrefix: 'Cấp',
+      levelUpToast: '🎉 Lên cấp {n}: {name}!',
+      recordToast: '🏆 Phá kỷ lục cũ!',
+      clipNoSupport: 'Máy này không quay video được',
+      clipTooShort: 'Video quá ngắn, thử lại nhé',
+      clipSaved: 'Đã lưu video!',
+      clipSaveFail: 'Không lưu được video',
+      levelNames: ['Mới tập','Cơ bản','Khá','Cao thủ','Huyền thoại','Siêu sao','Vô địch','Thiên tài','Bất tử','Vua Tâng Bóng'],
+      charNames: { A: 'Sư Tử', B: 'Cáo Nhỏ' }
+    },
+    en: {
+      title: 'Kick Up King',
+      tagline: 'Keep the rhythm — don’t let the ball hit the ground!',
+      startTitle: 'Ready to juggle?',
+      scoreLabel: 'Score',
+      highLabel: 'Best',
+      recordAriaIdle: 'Record gameplay video',
+      recordAriaActive: 'Stop recording',
+      pauseAria: 'Pause',
+      resumeAria: 'Resume',
+      muteAria: 'Toggle sound',
+      langAria: 'Switch language',
+      langBtnLabel: 'VI',
+      styleAriaA: 'Lion · #7',
+      styleAriaB: 'Little Fox · #10',
+      stylePickLabel: 'Choose your style',
+      namePickLabel: 'Name your character (optional)',
+      rule1: '<b>← / →</b> play it off your left/right foot or shoulder (depending on how high the ball drops)',
+      rule2: '<b>↑</b> head it &nbsp;·&nbsp; <b>↓</b> chest it',
+      rule3: '<b>0</b> trap the ball on your head/chest for 1 second, then flick it back up',
+      rule4: 'Watch where the ball is headed and press the right key the instant it touches you — the longer you last, the harder it gets!',
+      rule5: 'Press <b>P</b> or the ⏸ button to pause anytime',
+      startBtn: 'Enter Game',
+      readyTitle: 'Ready?',
+      readySub: 'Take a look at the controls, then hit Start',
+      backToSelect: '← Change',
+      confirmStart: 'Start',
+      pauseTitle: 'Paused',
+      pauseSub: 'Tap Resume or press P to keep playing',
+      resumeBtn: 'Resume',
+      overTitle: 'Dropped!',
+      overSub: 'touches',
+      overCompareChase: '{diff} points short of your record of {record}!',
+      overCompareBeat: 'Beat your old record by {diff} points!',
+      newRecord: '🏆 New record!',
+      retryBtn: 'Play again',
+      trickLabel: 'Trap',
+      trickKeyHint: '(key 0)',
+      trickCaption: 'Trap!',
+      dpadLeftAria: 'Left foot/shoulder',
+      dpadUpAria: 'Head',
+      dpadDownAria: 'Chest',
+      dpadRightAria: 'Right foot/shoulder',
+      dpadLeftLabel: 'Left',
+      dpadUpLabel: 'Head',
+      dpadDownLabel: 'Chest',
+      dpadRightLabel: 'Right',
+      levelPrefix: 'Level',
+      levelUpToast: '🎉 Level {n}: {name}!',
+      recordToast: '🏆 Beat your old record!',
+      clipNoSupport: 'This device can’t record video',
+      clipTooShort: 'Clip too short — try again',
+      clipSaved: 'Video saved!',
+      clipSaveFail: 'Couldn’t save the video',
+      levelNames: ['Beginner','Basic','Good','Skilled','Legend','Superstar','Champion','Genius','Immortal','Kick Up King'],
+      charNames: { A: 'Lion', B: 'Little Fox' }
+    }
+  };
+  var lang = 'vi';
+  try {
+    var savedLang = localStorage.getItem('vtb_lang');
+    if(savedLang === 'en' || savedLang === 'vi') lang = savedLang;
+  } catch(e){}
+  function tr(key){
+    var pack = LANG_STRINGS[lang] || LANG_STRINGS.vi;
+    var v = pack[key];
+    return (v === undefined) ? LANG_STRINGS.vi[key] : v;
+  }
+  function charDefaultName(styleKey){
+    return tr('charNames')[styleKey];
+  }
+
+  // Pushes every player-facing string onto the DOM for the current
+  // language. Safe to call any time (init, or the moment the player taps
+  // the language button) — dynamic bits (level badge, player tag, pause
+  // button label) are refreshed by calling their own update function
+  // rather than duplicating their logic here.
+  function applyLanguage(){
+    gameTitleEl.textContent = tr('title');
+    taglineEl.textContent = tr('tagline');
+    scoreLabelEl.textContent = tr('scoreLabel');
+    highLabelEl.textContent = tr('highLabel');
+    recordBtn.setAttribute('aria-label', recording ? tr('recordAriaActive') : tr('recordAriaIdle'));
+    muteBtn.setAttribute('aria-label', tr('muteAria'));
+    langBtn.textContent = tr('langBtnLabel');
+    langBtn.setAttribute('aria-label', tr('langAria'));
+
+    var styleCardA = document.querySelector('.style-card[data-style="A"]');
+    var styleCardB = document.querySelector('.style-card[data-style="B"]');
+    if(styleCardA) styleCardA.setAttribute('aria-label', tr('styleAriaA'));
+    if(styleCardB) styleCardB.setAttribute('aria-label', tr('styleAriaB'));
+    stylePickLabelEl.textContent = tr('stylePickLabel');
+    namePickLabelEl.textContent = tr('namePickLabel');
+
+    startTitleEl.textContent = tr('startTitle');
+    ['rule1','rule2','rule3','rule4','rule5'].forEach(function(key, i){
+      if(ruleEls[i]) ruleEls[i].innerHTML = tr(key);
+    });
+    startBtn.textContent = tr('startBtn');
+
+    readyTitleEl.textContent = tr('readyTitle');
+    readySubEl.textContent = tr('readySub');
+    backBtnReady.textContent = tr('backToSelect');
+    confirmStartBtn.textContent = tr('confirmStart');
+
+    pauseTitleEl.textContent = tr('pauseTitle');
+    pauseSubEl.textContent = tr('pauseSub');
+    backBtnPause.textContent = tr('backToSelect');
+    resumeBtn.textContent = tr('resumeBtn');
+
+    overTitle.textContent = tr('overTitle');
+    overSub.textContent = tr('overSub');
+    newRecord.textContent = tr('newRecord');
+    backBtnOver.textContent = tr('backToSelect');
+    retryBtn.textContent = tr('retryBtn');
+
+    trickLabelEl.textContent = tr('trickLabel');
+    trickKeyHintEl.textContent = tr('trickKeyHint');
+
+    dkeys.forEach(function(btn){
+      var key = btn.dataset.key;
+      var ariaMap = { ArrowLeft:'dpadLeftAria', ArrowUp:'dpadUpAria', ArrowDown:'dpadDownAria', ArrowRight:'dpadRightAria' };
+      var labelMap = { ArrowLeft:'dpadLeftLabel', ArrowUp:'dpadUpLabel', ArrowDown:'dpadDownLabel', ArrowRight:'dpadRightLabel' };
+      btn.setAttribute('aria-label', tr(ariaMap[key]));
+      var labelEl = btn.querySelector('.label');
+      if(labelEl) labelEl.textContent = tr(labelMap[key]);
+    });
+
+    recordToast.textContent = tr('recordToast');
+
+    // Re-derive anything that depends on the current game state rather than
+    // being static chrome — these already know how to build their own text.
+    updateLevelBadge();
+    updatePauseBtn();
+    playerNameInput.value = loadPlayerName(charStyle);
+    updatePlayerTag();
+  }
+
+  // ---------- character styles (two original, fictional rival personas —
+  // not likenesses of any real athlete) ----------
+  var CHAR_STYLES = {
+    A: { name: 'Sư Tử', number: '7',  jersey:'#D9333F', trim:'#1A1A1A', shorts:'#1A1A1A', headRDelta: -1, torsoWDelta: 0,  beard: false, stripes: false },
+    B: { name: 'Cáo Nhỏ', number: '10', jersey:'#12B4A6', trim:'#152B52', shorts:'#152B52', headRDelta: 3,  torsoWDelta: 10, beard: true, stripes: true }
+  };
+  var charStyle = 'A';
+  try {
+    var savedStyle = localStorage.getItem('vtb_style');
+    if(savedStyle && CHAR_STYLES[savedStyle]) charStyle = savedStyle;
+  } catch(e){}
+  function saveStyle(){ try{ localStorage.setItem('vtb_style', charStyle); }catch(e){} }
+
+  // Small static bust icon for the style-picker cards — independent of the
+  // full drawCharacter() pose/animation logic, just enough to preview jersey
+  // color, number, and the beard/build difference between the two styles.
+  function drawStylePreview(pctx, key){
+    var st = CHAR_STYLES[key];
+    var pw = 90, ph = 120, cx = pw/2;
+    pctx.clearRect(0,0,pw,ph);
+    var headR = 20 + st.headRDelta*0.5;
+    var headCY = 34;
+    var torsoW = 56 + st.torsoWDelta*0.6, torsoH = 62;
+    var torsoX = cx - torsoW/2, torsoY = headCY + headR + 8;
+
+    pctx.fillStyle = st.jersey;
+    pctx.beginPath();
+    pctx.moveTo(torsoX+12, torsoY);
+    pctx.arcTo(torsoX+torsoW, torsoY, torsoX+torsoW, torsoY+torsoH, 12);
+    pctx.arcTo(torsoX+torsoW, torsoY+torsoH, torsoX, torsoY+torsoH, 12);
+    pctx.arcTo(torsoX, torsoY+torsoH, torsoX, torsoY, 12);
+    pctx.arcTo(torsoX, torsoY, torsoX+torsoW, torsoY, 12);
+    pctx.closePath();
+    pctx.fill();
+    if(st.stripes){
+      pctx.save();
+      pctx.clip();
+      pctx.fillStyle = 'rgba(255,255,255,0.22)';
+      for(var stripeX2 = torsoX + 5; stripeX2 < torsoX + torsoW; stripeX2 += 9){
+        pctx.fillRect(stripeX2, torsoY, 2.4, torsoH);
+      }
+      pctx.restore();
+    }
+    pctx.fillStyle = '#FCFDF8';
+    pctx.beginPath();
+    pctx.moveTo(cx-6, torsoY+1);
+    pctx.lineTo(cx, torsoY+10);
+    pctx.lineTo(cx+6, torsoY+1);
+    pctx.closePath();
+    pctx.fill();
+    pctx.fillStyle = 'rgba(255,255,255,0.9)';
+    pctx.font = "800 20px 'Manrope', sans-serif";
+    pctx.textAlign = 'center';
+    pctx.textBaseline = 'middle';
+    pctx.fillText(st.number, cx, torsoY + torsoH*0.58);
+
+    pctx.fillStyle = '#F0BC85';
+    pctx.beginPath();
+    pctx.arc(cx, headCY, headR, 0, Math.PI*2);
+    pctx.fill();
+    pctx.fillStyle = '#2B1C14';
+    pctx.beginPath();
+    pctx.moveTo(cx, headCY);
+    pctx.arc(cx, headCY, headR+1, -Math.PI*0.98, -Math.PI*0.02);
+    pctx.closePath();
+    pctx.fill();
+    pctx.fillStyle = st.trim;
+    pctx.fillRect(cx-headR, headCY-3.5, headR*2, 5.5);
+    pctx.fillStyle = '#16281C';
+    pctx.beginPath();
+    pctx.arc(cx-6.5, headCY+2, 1.4, 0, Math.PI*2);
+    pctx.arc(cx+6.5, headCY+2, 1.4, 0, Math.PI*2);
+    pctx.fill();
+    if(st.beard){
+      pctx.fillStyle = '#2B1C14';
+      pctx.beginPath();
+      pctx.moveTo(cx-headR*0.6, headCY+headR*0.4);
+      pctx.quadraticCurveTo(cx-headR*0.66, headCY+headR*0.85, cx, headCY+headR*1.05);
+      pctx.quadraticCurveTo(cx+headR*0.66, headCY+headR*0.85, cx+headR*0.6, headCY+headR*0.4);
+      pctx.quadraticCurveTo(cx, headCY+headR*0.62, cx-headR*0.6, headCY+headR*0.4);
+      pctx.closePath();
+      pctx.fill();
+    }
+  }
+
+  // ---------- audio (tiny synth, no assets) ----------
+  var actx = null;
+  // Every sound (beeps, applause, music) routes through this single node
+  // instead of straight to actx.destination, so screen recording can tap
+  // one place to pick up all game audio without touching each sfx call site.
+  var masterGain = null;
+  function ensureAudio(){
+    if(actx || muted) return;
+    try{
+      actx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = actx.createGain();
+      masterGain.gain.value = 1;
+      masterGain.connect(actx.destination);
+    }catch(e){}
+  }
+  function beep(freq, dur, type, gain){
+    if(muted || !actx) return;
+    var o = actx.createOscillator();
+    var g = actx.createGain();
+    o.type = type || 'sine';
+    o.frequency.value = freq;
+    g.gain.value = gain || 0.08;
+    o.connect(g); g.connect(masterGain || actx.destination);
+    var now = actx.currentTime;
+    g.gain.setValueAtTime(g.gain.value, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    o.start(now);
+    o.stop(now + dur);
+  }
+  function sfxHit(){ beep(620, 0.11, 'triangle', 0.09); }
+  function sfxDrop(){ beep(140, 0.35, 'sawtooth', 0.10); }
+  function sfxStart(){ beep(440, 0.08, 'sine', 0.07); }
+  function sfxTrick(part){ var base = part === 'head' ? 620 : 520; beep(base, 0.09, 'sine', 0.08); setTimeout(function(){ beep(base*1.5, 0.14, 'sine', 0.07); }, 70); }
+  function sfxFlick(){ beep(700, 0.09, 'triangle', 0.08); }
+
+  // A short burst of filtered, enveloped noise reads as crowd applause well
+  // enough without needing an actual audio asset — a few % of samples spike
+  // to full volume ("crackle") on top of the swell so it sounds like many
+  // hands clapping rather than a plain hiss.
+  function sfxApplause(){
+    if(muted) return;
+    ensureAudio();
+    if(!actx) return;
+    try{
+      var duration = 1.6;
+      var sr = actx.sampleRate;
+      var bufferSize = Math.floor(sr * duration);
+      var buffer = actx.createBuffer(1, bufferSize, sr);
+      var data = buffer.getChannelData(0);
+      for(var i=0;i<bufferSize;i++){
+        var t = i/bufferSize;
+        var envelope = Math.min(t/0.08, 1) * Math.max(0, 1 - Math.max(0, t-0.5)/0.5);
+        var crackle = (Math.random() < 0.05) ? 1 : 0.35;
+        data[i] = (Math.random()*2-1) * envelope * crackle;
+      }
+      var src = actx.createBufferSource();
+      src.buffer = buffer;
+      var filter = actx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 2400;
+      filter.Q.value = 0.6;
+      var gain = actx.createGain();
+      gain.gain.value = 0.55;
+      src.connect(filter); filter.connect(gain); gain.connect(masterGain || actx.destination);
+      src.start();
+    }catch(e){}
+  }
+
+  // A light, gentle arpeggio loop — meant as easy-listening wind-down music
+  // rather than anything that demands attention. Two earlier tries missed:
+  // a slow sustained chord pad read as sad, and a driving arpeggio+kick (or
+  // crowd noise) got tiring on the ears over a long session. This splits
+  // the difference — a real, pleasant little melody, soft round timbre,
+  // unhurried tempo, notes overlapping gently instead of jabbing in and out.
+  // Synthesized the same way as the sfx above (no audio asset, so it stays
+  // offline-friendly for the Android build). Runs continuously from the
+  // moment the player first presses Bắt đầu, mixed quiet so it never
+  // competes with the sfx beeps.
+  var musicGain = null;
+  var musicPlaying = false;
+  var musicTimer = null;
+  var musicBeatIdx = 0;
+  var MUSIC_BPM = 100;
+  var MUSIC_BEAT_SEC = 60 / MUSIC_BPM;
+  // Mỗi hợp âm rải thành 4 nốt (gốc–ba–năm–tám), mỗi phách một nốt.
+  var MUSIC_CHORDS = [
+    [261.63, 329.63, 392.00, 523.25], // C major
+    [220.00, 261.63, 329.63, 440.00], // A minor
+    [174.61, 220.00, 261.63, 349.23], // F major
+    [196.00, 246.94, 293.66, 392.00]  // G major
+  ];
+
+  function playMusicNote(freq, beatSec){
+    if(!actx || !musicGain) return;
+    var now = actx.currentTime;
+    var o = actx.createOscillator();
+    var g = actx.createGain();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    var peak = 0.15;
+    // Soft attack, and a release that rings on past the beat itself so
+    // consecutive notes overlap slightly (legato) instead of each one
+    // being a sharp, separate little jab.
+    g.gain.setValueAtTime(0, now);
+    g.gain.linearRampToValueAtTime(peak, now + 0.06);
+    g.gain.linearRampToValueAtTime(peak * 0.55, now + beatSec * 0.7);
+    g.gain.linearRampToValueAtTime(0, now + beatSec * 1.4);
+    o.connect(g); g.connect(musicGain);
+    o.start(now);
+    o.stop(now + beatSec * 1.45);
+  }
+
+  function musicStep(){
+    if(!musicPlaying) return;
+    if(!muted){
+      var barIdx = Math.floor(musicBeatIdx / 4) % MUSIC_CHORDS.length;
+      var beatInBar = musicBeatIdx % 4;
+      playMusicNote(MUSIC_CHORDS[barIdx][beatInBar], MUSIC_BEAT_SEC);
+    }
+    musicBeatIdx++;
+    musicTimer = setTimeout(musicStep, MUSIC_BEAT_SEC * 1000);
+  }
+
+  function startMusic(){
+    ensureAudio();
+    if(!actx || musicPlaying) return;
+    if(!musicGain){
+      musicGain = actx.createGain();
+      musicGain.gain.value = 1;
+      musicGain.connect(masterGain);
+    }
+    musicPlaying = true;
+    musicBeatIdx = 0;
+    musicStep();
+  }
+
+  // ---------- screen recording (clip the gameplay canvas + game audio) ----------
+  // Uses canvas.captureStream()+MediaRecorder — both built into the browser,
+  // no extra library. Only shown when the device actually supports them, so
+  // older WebViews just never see the button instead of showing one that fails.
+  var recordSupported = !!(canvas.captureStream && window.MediaRecorder);
+  var mediaRecorder = null;
+  var recordedChunks = [];
+  var recording = false;
+  var recordStartTime = 0;
+  var recordTimerInterval = null;
+  var recordAudioDest = null;
+  var RECORD_MAX_MS = 3 * 60 * 1000; // safety cap so a forgotten recording can't grow forever
+
+  function pickRecorderMime(){
+    var candidates = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
+    for(var i=0;i<candidates.length;i++){
+      if(MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(candidates[i])) return candidates[i];
+    }
+    return '';
+  }
+
+  function showClipToast(msg){
+    clipToast.textContent = msg;
+    clipToast.classList.add('show');
+    setTimeout(function(){ clipToast.classList.remove('show'); }, 2200);
+  }
+
+  function startRecording(){
+    if(!recordSupported || recording) return;
+    ensureAudio();
+    try{
+      var tracks = canvas.captureStream(30).getVideoTracks();
+      if(actx && masterGain){
+        recordAudioDest = actx.createMediaStreamDestination();
+        masterGain.connect(recordAudioDest);
+        tracks = tracks.concat(recordAudioDest.stream.getAudioTracks());
+      }
+      var stream = new MediaStream(tracks);
+      var mime = pickRecorderMime();
+      mediaRecorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      recordedChunks = [];
+      mediaRecorder.ondataavailable = function(e){
+        if(e.data && e.data.size > 0) recordedChunks.push(e.data);
+      };
+      mediaRecorder.onstop = onRecordingStopped;
+      mediaRecorder.start();
+      recording = true;
+      recordStartTime = performance.now();
+      recordBtn.classList.add('recording');
+      recordBtn.setAttribute('aria-label', tr('recordAriaActive'));
+      updateRecordTimerLabel();
+      recordTimerInterval = setInterval(updateRecordTimerLabel, 500);
+    }catch(e){
+      recording = false;
+      showClipToast(tr('clipNoSupport'));
+    }
+  }
+
+  function updateRecordTimerLabel(){
+    var elapsed = performance.now() - recordStartTime;
+    if(elapsed >= RECORD_MAX_MS){ stopRecording(); return; }
+    var totalSec = Math.floor(elapsed/1000);
+    var mm = String(Math.floor(totalSec/60));
+    if(mm.length < 2) mm = '0'+mm;
+    var ss = String(totalSec%60);
+    if(ss.length < 2) ss = '0'+ss;
+    var timeEl = recordBtn.querySelector('.rec-time');
+    if(!timeEl){
+      timeEl = document.createElement('span');
+      timeEl.className = 'rec-time';
+      recordBtn.appendChild(timeEl);
+    }
+    timeEl.textContent = mm+':'+ss;
+  }
+
+  function stopRecording(){
+    if(!recording || !mediaRecorder) return;
+    recording = false;
+    if(recordTimerInterval){ clearInterval(recordTimerInterval); recordTimerInterval = null; }
+    recordBtn.classList.remove('recording');
+    recordBtn.setAttribute('aria-label', tr('recordAriaIdle'));
+    var timeEl = recordBtn.querySelector('.rec-time');
+    if(timeEl) timeEl.remove();
+    try{ mediaRecorder.stop(); }catch(e){}
+  }
+
+  function onRecordingStopped(){
+    if(recordAudioDest){
+      try{ masterGain.disconnect(recordAudioDest); }catch(e){}
+      recordAudioDest = null;
+    }
+    var mime = (mediaRecorder && mediaRecorder.mimeType) || 'video/webm';
+    var blob = new Blob(recordedChunks, { type: mime });
+    recordedChunks = [];
+    if(blob.size === 0){
+      showClipToast(tr('clipTooShort'));
+      return;
+    }
+    saveOrShareClip(blob);
+  }
+
+  // On a real phone the native share sheet (Lưu vào máy / Zalo / Messenger…)
+  // is the natural way to get the clip out of the app; on desktop browsers
+  // that API usually isn't there, so it falls back to a normal file download.
+  function saveOrShareClip(blob){
+    var ext = (blob.type.indexOf('mp4') !== -1) ? 'mp4' : 'webm';
+    var fileName = 'kick-up-king-' + Date.now() + '.' + ext;
+    var file = null;
+    try{ file = new File([blob], fileName, { type: blob.type }); }catch(e){}
+    if(file && window.navigator && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share){
+      navigator.share({ files: [file], title: tr('title') }).catch(function(){
+        downloadBlob(blob, fileName);
+      });
+    } else {
+      downloadBlob(blob, fileName);
+    }
+  }
+
+  // When this page is running inside the claude.ai Artifact viewer, a plain
+  // <a download> link is inert there — window.claude.use('downloads') is the
+  // real save path in that context. Outside it (the standalone file, or the
+  // packaged Android app) window.claude doesn't exist, so this falls straight
+  // through to the ordinary anchor-click download.
+  function downloadBlob(blob, fileName){
+    if(window.claude && typeof window.claude.use === 'function'){
+      window.claude.use('downloads').then(function(downloads){
+        if(!downloads){ downloadBlobDirect(blob, fileName); return; }
+        return downloads.save({ filename: fileName, data: blob }).then(function(){
+          showClipToast(tr('clipSaved'));
+        });
+      }).catch(function(err){
+        if(err && err.code === 'declined') return; // viewer said no — respect it, don't nag
+        downloadBlobDirect(blob, fileName);
+      });
+      return;
+    }
+    downloadBlobDirect(blob, fileName);
+  }
+
+  // Reads a Blob as base64. Passes (base64, fullDataUrl) to onDone.
+  function blobToBase64(blob, onDone, onFail){
+    try{
+      var reader = new FileReader();
+      reader.onload = function(){
+        var dataUrl = reader.result;
+        // The mime type on the data: URL can itself contain a comma (e.g.
+        // "data:video/webm;codecs=vp9,opus;base64,AAA...") when the codec
+        // list has more than one entry, so the FIRST comma isn't
+        // necessarily the one separating the header from the payload — the
+        // real separator is always the LAST one, right after "base64".
+        var comma = dataUrl.lastIndexOf(',');
+        onDone(comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl, dataUrl);
+      };
+      reader.onerror = onFail;
+      reader.readAsDataURL(blob);
+    }catch(e){ onFail(); }
+  }
+
+  // A blob: URL (URL.createObjectURL) only ever resolves inside this page's
+  // own JS — the packaged Android app's WebView has no download manager
+  // wired up at all, so it can never fetch one. The first fix tried here
+  // was a data: URI + <a download> click, which does work for a very short
+  // clip, but Android WebView caps how long a URL it will navigate to, and
+  // any real recording's base64 payload blows straight through that cap —
+  // the click just silently does nothing, no error. window.AndroidSave (see
+  // MainActivity.java) sidesteps URLs entirely: the base64 bytes go straight
+  // to native code over a JS interface, with no length ceiling to hit, and
+  // the native side writes the file directly into the phone's Downloads
+  // folder (MediaStore on Android 10+, a direct file write with a legacy
+  // permission prompt on older versions) rather than opening a share sheet.
+  function downloadBlobDirect(blob, fileName){
+    if(window.AndroidSave && typeof window.AndroidSave.saveVideo === 'function'){
+      blobToBase64(blob, function(base64){
+        try{
+          // The native side shows its own success/failure toast once the
+          // save (and, on old Android versions, the permission prompt)
+          // actually finishes — showing an optimistic toast here too would
+          // just contradict it if the native save fails.
+          window.AndroidSave.saveVideo(base64, blob.type || 'video/webm');
+        }catch(e){
+          showClipToast(tr('clipSaveFail'));
+        }
+      }, function(){ showClipToast(tr('clipSaveFail')); });
+      return;
+    }
+    // Plain browser (standalone file, or the Artifact preview without the
+    // downloads capability) — no WebView URL-length ceiling to worry about
+    // here, so the ordinary data: URI + anchor click works fine.
+    blobToBase64(blob, function(base64, dataUrl){
+      try{
+        var a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showClipToast(tr('clipSaved'));
+      }catch(e){
+        showClipToast(tr('clipSaveFail'));
+      }
+    }, function(){ showClipToast(tr('clipSaveFail')); });
+  }
+
+  // ---------- state ----------
+  var state = 'start'; // start | playing | paused | gameover
+  var score = 0;
+  var ball = { x: CENTER_X, y: 90 };
+  var toss = null;
+  var hitAnim = null; // {key, start}
+  var holdInfo = null; // {part:'head'|'foot', x, y, start, duration} — the freestyle control trick
+  var manualPauseAt = null; // set while paused, whether by the player or by backgrounding
+  var idleT = 0;
+  var sessionStartHighScore = 0; // the record this game started with — beating it is the celebration moment
+  var recordCelebratedThisGame = false; // fires the confetti+applause once per game, right when it happens
+  var confetti = []; // {x,y,vx,vy,rot,vr,color,w,h,life}
+  var CONFETTI_COLORS = ['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#FF8A3D','#C77DFF'];
+  // Snapshot of the HTML game-over card's content, redrawn onto the canvas
+  // each frame while state === 'gameover' — see drawGameOverCanvasCard().
+  var goCanvasScore = 0, goCanvasTitle = '', goCanvasSub = '', goCanvasCompareText = '', goCanvasCompareKind = null, goCanvasNewRecord = false;
+  // Live, on-canvas score feedback — see drawLiveScoreHud() and
+  // updateAndDrawScorePopups(). scoreBadgePopAt drives a quick punch-scale
+  // on the running-score badge every time it changes; scorePopups is the
+  // little floating "+N" that appears right at the contact point.
+  var scoreBadgePopAt = -Infinity;
+  var scorePopups = []; // {x, y, points, start}
+
+  function celebrateNewRecord(){
+    sfxApplause();
+    for(var i=0;i<55;i++){
+      confetti.push({
+        x: Math.random()*W,
+        y: -20 - Math.random()*120,
+        vx: (Math.random()-0.5)*90,
+        vy: 110 + Math.random()*130,
+        rot: Math.random()*Math.PI*2,
+        vr: (Math.random()-0.5)*9,
+        color: CONFETTI_COLORS[Math.floor(Math.random()*CONFETTI_COLORS.length)],
+        w: 6+Math.random()*4,
+        h: 10+Math.random()*6,
+        life: 0
+      });
+    }
+  }
+
+  function updateAndDrawConfetti(dt){
+    if(!confetti.length) return;
+    for(var i=confetti.length-1;i>=0;i--){
+      var c = confetti[i];
+      c.life += dt;
+      c.x += c.vx*dt;
+      c.y += c.vy*dt;
+      c.vy += 70*dt;
+      c.rot += c.vr*dt;
+      if(c.y > H+30 || c.life > 2.6){ confetti.splice(i,1); continue; }
+      ctx.save();
+      ctx.translate(c.x, c.y);
+      ctx.rotate(c.rot);
+      ctx.globalAlpha = Math.max(0, 1 - c.life/2.6);
+      ctx.fillStyle = c.color;
+      ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---------- difficulty levels ----------
+  // Discrete tiers instead of a smooth ramp, so the player can feel — and see —
+  // themselves moving up, rather than the game quietly creeping harder.
+  // 5 levels; level 1 is scores 1–10, and each level after that needs double
+  // the previous level's point span to clear (10, then 20, then 40, then 80
+  // more) — so level 2 starts at 11, level 3 at 31, level 4 at 71, level 5
+  // at 151.
+  // Each level's point span doubles the one before it (level 1 is scores
+  // 1-10, level 2 is 11-30, level 3 is 31-70, and so on), same rule extended
+  // out to 10 levels. Difficulty (T, reaction window) keeps climbing every
+  // level too, but tapers off in the upper levels instead of continuing the
+  // same steep drop — by level 10 the flight time is already a fraction of
+  // a second, and reaction windows below ~85ms stop being humanly reachable
+  // at all, so the curve flattens there rather than becoming unwinnable.
+  var LEVELS = [
+    { min: 0,    name: 'Mới tập',       T: 1.55, tol: 0.36, upW: 0.06 },
+    { min: 11,   name: 'Cơ bản',        T: 1.15, tol: 0.28, upW: 0.12 },
+    { min: 31,   name: 'Khá',           T: 0.90, tol: 0.22, upW: 0.17 },
+    { min: 71,   name: 'Cao thủ',       T: 0.72, tol: 0.17, upW: 0.21 },
+    { min: 151,  name: 'Huyền thoại',   T: 0.58, tol: 0.13, upW: 0.26 },
+    { min: 311,  name: 'Siêu sao',      T: 0.50, tol: 0.11,  upW: 0.30 },
+    { min: 631,  name: 'Vô địch',       T: 0.44, tol: 0.095, upW: 0.33 },
+    { min: 1271, name: 'Thiên tài',     T: 0.39, tol: 0.083, upW: 0.36 },
+    { min: 2551, name: 'Bất tử',        T: 0.35, tol: 0.073, upW: 0.39 },
+    { min: 5111, name: 'Vua Tâng Bóng', T: 0.32, tol: 0.065, upW: 0.42 }
+  ];
+
+  // The real-world reaction budget a player gets at each level, in
+  // milliseconds — this is the one knob that actually matters for fairness.
+  // A fixed pixel hit-box (the old approach) quietly favors slow targets
+  // (a lofted header) over fast ones (a low foot pass, always moving quickest
+  // simply from being closest to the ground) even at the same level. Deriving
+  // the hit-box from the ball's own current speed instead keeps every body
+  // part equally fair to react to at a given level. The window keeps
+  // shrinking through level 10 but flattens out near the bottom rather than
+  // chasing zero, since well below ~85ms no one can react at all.
+  var REACT_WINDOW_MS = [220, 185, 160, 140, 120, 110, 102, 96, 90, 85];
+
+  function levelIndexFor(s){
+    var idx = 0;
+    for(var i=0;i<LEVELS.length;i++){ if(s >= LEVELS[i].min) idx = i; }
+    return idx;
+  }
+
+  var currentLevelIdx = 0;
+  var levelToastTimer = null;
+  function updateLevelBadge(){
+    var idx = levelIndexFor(score);
+    var lvlName = tr('levelNames')[idx];
+    levelBadge.textContent = tr('levelPrefix') + ' ' + (idx+1) + ' · ' + lvlName;
+    if(idx > currentLevelIdx){
+      levelBadge.classList.add('level-up');
+      setTimeout(function(){ levelBadge.classList.remove('level-up'); }, 500);
+      levelToast.textContent = tr('levelUpToast').replace('{n}', idx+1).replace('{name}', lvlName);
+      levelToast.classList.add('show');
+      if(levelToastTimer) clearTimeout(levelToastTimer);
+      levelToastTimer = setTimeout(function(){ levelToast.classList.remove('show'); }, 1700);
+    }
+    currentLevelIdx = idx;
+  }
+
+  // Which real contact point a toss aims at. ↑ is always the head and ↓ is
+  // always the chest, but ← and → each cover two possible spots on that side
+  // — a foot (low) or a shoulder (high) — so the same key answers for either,
+  // and the player reads the ball's height to know which one is coming.
+  function pickPart(lvl, idx){
+    var pHead = lvl.upW;
+    var pChest = lvl.upW;
+    var sideTotal = Math.max(0, 1 - pHead - pChest);
+    var perSide = sideTotal / 2;
+    var shoulderRatio = Math.min(0.45, 0.15 + idx*0.05);
+    var pLeftFoot = perSide * (1 - shoulderRatio);
+    var pLeftShoulder = perSide * shoulderRatio;
+    var pRightFoot = perSide * (1 - shoulderRatio);
+
+    var r = Math.random();
+    var acc = pHead;
+    if(r < acc) return 'head';
+    acc += pChest;
+    if(r < acc) return 'chest';
+    acc += pLeftFoot;
+    if(r < acc) return 'footLeft';
+    acc += pLeftShoulder;
+    if(r < acc) return 'shoulderLeft';
+    acc += pRightFoot;
+    if(r < acc) return 'footRight';
+    return 'shoulderRight';
+  }
+
+  function startToss(prevX, prevY, forcedPart, flightBoost){
+    var idx = levelIndexFor(score);
+    var lvl = LEVELS[idx];
+    var part = forcedPart || pickPart(lvl, idx);
+    var t = PARTS[part];
+    var T = flightBoost || lvl.T;
+    var tol = lvl.tol;
+    var vx = (t.x - prevX) / T;
+    var vy0 = (t.y - prevY - 0.5*GRAVITY*T*T) / T;
+    toss = {
+      part: part,
+      required: t.key,
+      targetX: t.x, targetY: t.y,
+      startX: prevX, startY: prevY,
+      vx: vx, vy0: vy0,
+      gravity: GRAVITY,
+      T: T, tol: tol,
+      t0: performance.now()/1000,
+      resolved: false
+    };
+  }
+
+  // The very first serve drops from near the top of the field. Forcing a long
+  // flight time there with normal gravity makes the exact-arrival solver launch
+  // the ball upward off-screen first (so it can "waste" the extra time), then
+  // have it come rocketing back down — the opposite of gentle. So the first
+  // ball instead just falls from rest under a softened, per-target gravity
+  // solved to land exactly at the intended, generous time — the same trick
+  // works for any starting part (head/chest/foot both land above the drop
+  // point), so which one opens the game is picked at random each play instead
+  // of always being the same straight-down chest drop. A part off-center
+  // (a foot) naturally drifts sideways on the way down, since x and y are
+  // solved independently — free variety, not an extra thing to tune.
+  var FIRST_TOSS_PARTS = ['head', 'chest', 'footLeft', 'footRight'];
+  function startFirstToss(){
+    var lvl = LEVELS[0];
+    var part = FIRST_TOSS_PARTS[Math.floor(Math.random()*FIRST_TOSS_PARTS.length)];
+    var t = PARTS[part];
+    var T = 1.8 + Math.random()*0.5;
+    var startX = CENTER_X, startY = 90;
+    var vx = (t.x - startX) / T;
+    var g = 2 * (t.y - startY) / (T * T);
+    toss = {
+      part: part,
+      required: t.key,
+      targetX: t.x, targetY: t.y,
+      startX: startX, startY: startY,
+      vx: vx, vy0: 0,
+      gravity: g,
+      T: T, tol: lvl.tol + 0.06,
+      t0: performance.now()/1000,
+      resolved: false
+    };
+  }
+
+  function updateBallFromToss(){
+    if(!toss) return;
+    var now = performance.now()/1000;
+    var el = now - toss.t0;
+    ball.x = toss.startX + toss.vx*el;
+    ball.y = toss.startY + toss.vy0*el + 0.5*toss.gravity*el*el;
+    toss._elapsed = el;
+  }
+
+  // A press only ever scores or does nothing — it never ends the run by itself.
+  // Besides the scripted target for this toss, we also check the ball's actual
+  // live position against every contact point that key could mean: if an
+  // earlier attempt is missed (say the header) and the ball keeps falling into
+  // another zone's reach, a well-timed press there still saves it. Only
+  // touching the ground ends the game.
+  function findMatchingPart(key){
+    if(!toss || toss.resolved) return null;
+    var idx = levelIndexFor(score);
+    // Convert this level's reaction-time budget into a position tolerance
+    // using the ball's actual current speed, not a one-size-fits-all pixel
+    // radius — a fast-moving ball earns a bigger hit-box, a slow one a
+    // tighter one, so the real difficulty is how much TIME you have, evenly,
+    // whichever body part is coming.
+    var elapsed = performance.now()/1000 - toss.t0;
+    var vyNow = toss.vy0 + toss.gravity*elapsed;
+    var vxNow = toss.vx;
+    var halfWindow = (REACT_WINDOW_MS[idx] || REACT_WINDOW_MS[REACT_WINDOW_MS.length-1]) / 1000 / 2;
+    var yTol = Math.max(26, halfWindow * Math.abs(vyNow));
+    // Sideways speed is only ever a few tens of px/s here, so the reaction-
+    // time formula alone would barely widen it — leaving almost no room for
+    // a save on a toss whose flight simply drifts a bit as it keeps falling
+    // past its original target (the whole point of the miss-recovery rule).
+    // A floor closer to the character's own width keeps that rule meaningful.
+    var xTol = Math.max(38, halfWindow * Math.abs(vxNow));
+    var bx = ball.x, by = ball.y;
+    for(var i=0;i<PART_NAMES.length;i++){
+      var name = PART_NAMES[i];
+      var p = PARTS[name];
+      if(p.key !== key) continue;
+      if(Math.abs(by - p.y) <= yTol && Math.abs(bx - p.x) <= xTol) return name;
+    }
+    return null;
+  }
+
+  var lastAttemptAt = 0;
+  function handleKey(key){
+    if(state === 'start'){ enterGameScreen(); return; }
+    if(state === 'ready'){ startGame(); return; }
+    if(state !== 'playing' || !toss || toss.resolved) return;
+    var now = performance.now();
+    if(now - lastAttemptAt < 60) return; // ignore accidental double-fires
+    lastAttemptAt = now;
+    ensureAudio();
+    flashKey(key);
+    // Scoring is decided purely by where the ball actually is, never by the
+    // clock alone — otherwise a press could still count near the scripted
+    // arrival time even after the ball has clearly sailed past that body
+    // part (very noticeable on the chest, since a toss can arrive there at
+    // real speed on its way somewhere else).
+    var hitPart = findMatchingPart(key);
+    if(hitPart){
+      registerScore(1);
+      toss.resolved = true;
+      hitAnim = { part: hitPart, start: performance.now() };
+      sfxHit();
+      startToss(ball.x, ball.y, null);
+    }
+    // mistimed or wrong-zone presses: no penalty, just ignored
+  }
+
+  // Shared by every way to score a point: updates the number, the level
+  // (which may pop its own toast), and the saved high score. Crossing the
+  // record this game started with only pops a quick toast here — the
+  // confetti-and-applause celebration is saved for game over, once the
+  // final (highest) score of the run is actually known; firing it mid-toss
+  // would also mean synthesizing a burst of noise on the main thread right
+  // as the next toss needs an accurate timestamp, which is worth avoiding.
+  var recordToastTimer = null;
+  function registerScore(points){
+    score += points;
+    scoreVal.textContent = score;
+    updateLevelBadge();
+    if(score > highScore){ highScore = score; highVal.textContent = highScore; saveHigh(); }
+    if(!recordCelebratedThisGame && sessionStartHighScore > 0 && score > sessionStartHighScore){
+      recordCelebratedThisGame = true;
+      recordToast.classList.add('show');
+      if(recordToastTimer) clearTimeout(recordToastTimer);
+      recordToastTimer = setTimeout(function(){ recordToast.classList.remove('show'); }, 1700);
+    }
+    // Immediate, on-canvas feedback right at the moment of the touch — the
+    // player's eyes are on the ball, not on the HTML scoreboard above the
+    // field, so that's the only place a change actually gets noticed while
+    // still playing. See drawLiveScoreHud() / updateAndDrawScorePopups().
+    scoreBadgePopAt = performance.now();
+    scorePopups.push({ x: ball.x, y: ball.y, points: points, start: performance.now() });
+  }
+
+  // The freestyle "khống chế" trick: instead of bouncing the ball straight
+  // back up, catch it dead still on the head or the chest, hold it there for
+  // a beat, then flick it back into play. Only the two centered, flattish spots
+  // a player could actually balance a ball on qualify.
+  function handleTrick(){
+    if(state === 'start'){ enterGameScreen(); return; }
+    if(state === 'ready'){ startGame(); return; }
+    if(state !== 'playing' || holdInfo || !toss || toss.resolved) return;
+    var now = performance.now();
+    if(now - lastAttemptAt < 60) return;
+    lastAttemptAt = now;
+    // Same rule as a normal hit: only the ball's live position decides it.
+    var matchesHead = findMatchingPart('ArrowUp') === 'head';
+    var matchesChest = !matchesHead && findMatchingPart('ArrowDown') === 'chest';
+    if(!matchesHead && !matchesChest) return;
+
+    ensureAudio();
+    trickBtn.classList.add('active');
+    setTimeout(function(){ trickBtn.classList.remove('active'); }, 900);
+
+    var part = matchesHead ? 'head' : 'chest';
+    var holdX = PARTS[part].x, holdY = PARTS[part].y;
+    ball.x = holdX; ball.y = holdY;
+    toss.resolved = true;
+    hitAnim = { part: part, start: performance.now() };
+
+    // Reward the header a bit more than the chest control — pulling off
+    // either costs a normal hit's worth of attention, but a header reads as
+    // the flashier move, so it's worth the risk of getting distracted by it.
+    registerScore(part === 'head' ? 3 : 2);
+    sfxTrick(part);
+
+    holdInfo = { part: part, x: holdX, y: holdY, start: performance.now(), duration: 1000 };
+  }
+
+  function flashKey(key){
+    dkeys.forEach(function(b){
+      if(b.dataset.key === key){
+        b.classList.add('active');
+        setTimeout(function(){ b.classList.remove('active'); }, 140);
+      }
+    });
+  }
+
+  function focusGame(){
+    try{ canvas.focus({ preventScroll: true }); }catch(e){ try{ canvas.focus(); }catch(e2){} }
+  }
+
+  // Step 1 of the two-step start flow: leaving the character-select screen
+  // just switches the player onto the gameplay screen (scoreboard, dpad,
+  // trick button all already in their final places) WITHOUT dropping the
+  // first ball yet — that only happens once they deliberately confirm on
+  // the ready overlay, so nobody gets caught off guard mid-orientation.
+  function enterGameScreen(){
+    ensureAudio();
+    state = 'ready';
+    startOverlay.hidden = true;
+    readyOverlay.hidden = false;
+  }
+
+  function startGame(){
+    ensureAudio();
+    sfxStart();
+    startMusic();
+    focusGame();
+    state = 'playing';
+    score = 0;
+    scoreVal.textContent = '0';
+    currentLevelIdx = 0;
+    if(levelToastTimer) clearTimeout(levelToastTimer);
+    levelToast.classList.remove('show');
+    if(recordToastTimer) clearTimeout(recordToastTimer);
+    recordToast.classList.remove('show');
+    recordCelebratedThisGame = false;
+    sessionStartHighScore = highScore;
+    updateLevelBadge();
+    startOverlay.hidden = true;
+    readyOverlay.hidden = true;
+    overOverlay.hidden = true;
+    pauseOverlay.hidden = true;
+    manualPauseAt = null;
+    updatePauseBtn();
+    hitAnim = null;
+    ball.x = CENTER_X; ball.y = 90;
+    startFirstToss();
+  }
+
+  // Pausing freezes the toss clock and the hold-trick clock by the same
+  // wall-clock offset it was paused for, so nothing jumps or "catches up"
+  // the instant play resumes — the ball just picks up exactly where it left off.
+  function pauseGame(){
+    if(state !== 'playing') return;
+    state = 'paused';
+    manualPauseAt = performance.now();
+    pauseOverlay.hidden = false;
+    updatePauseBtn();
+  }
+
+  function resumeGame(){
+    if(state !== 'paused') return;
+    var delta = (performance.now() - manualPauseAt)/1000;
+    if(toss) toss.t0 += delta;
+    if(holdInfo) holdInfo.start += delta*1000;
+    manualPauseAt = null;
+    state = 'playing';
+    pauseOverlay.hidden = true;
+    updatePauseBtn();
+    focusGame();
+  }
+
+  // From pause or the game-over screen, bail all the way back to the start
+  // screen so the player can pick a different character style before the
+  // next run — a fresh start, not a resume, so any in-flight toss/hold is
+  // just dropped rather than carried over.
+  function backToStart(){
+    // Never leave a clip stuck mid-recording when the player exits — wrap it
+    // up and hand them whatever was captured instead of losing it silently.
+    if(recording) stopRecording();
+    state = 'start';
+    toss = null;
+    holdInfo = null;
+    hitAnim = null;
+    manualPauseAt = null;
+    if(levelToastTimer) clearTimeout(levelToastTimer);
+    levelToast.classList.remove('show');
+    if(recordToastTimer) clearTimeout(recordToastTimer);
+    recordToast.classList.remove('show');
+    pauseOverlay.hidden = true;
+    overOverlay.hidden = true;
+    readyOverlay.hidden = true;
+    startOverlay.hidden = false;
+    updatePauseBtn();
+  }
+
+  function togglePause(){
+    if(state === 'playing') pauseGame();
+    else if(state === 'paused') resumeGame();
+  }
+
+  function updatePauseBtn(){
+    pauseBtn.textContent = state === 'paused' ? '▶️' : '⏸';
+    pauseBtn.setAttribute('aria-label', state === 'paused' ? tr('resumeAria') : tr('pauseAria'));
+  }
+
+  function gameOver(){
+    if(state !== 'playing') return;
+    state = 'gameover';
+    sfxDrop();
+    finalScoreEl.textContent = score;
+    // Re-trigger the pop-in animation every time (removing then re-adding a
+    // class doesn't restart a CSS animation unless the browser is forced to
+    // recompute layout in between — the offsetWidth read below does that).
+    finalScoreEl.classList.remove('pop');
+    void finalScoreEl.offsetWidth;
+    finalScoreEl.classList.add('pop');
+    overSub.textContent = tr('overSub');
+    if(score >= highScore && score > 0){
+      newRecord.hidden = false;
+    } else {
+      newRecord.hidden = true;
+    }
+    // Tell the player exactly where this run stands against their own
+    // record — this is the line a recorded video needs to make the score
+    // legible and to feed the competitive urge to beat it next time.
+    overCompareEl.classList.remove('chase', 'beat');
+    if(sessionStartHighScore > 0 && score !== sessionStartHighScore){
+      var diff = Math.abs(score - sessionStartHighScore);
+      if(score > sessionStartHighScore){
+        overCompareEl.textContent = tr('overCompareBeat').replace('{diff}', diff);
+        overCompareEl.classList.add('beat');
+      } else {
+        overCompareEl.textContent = tr('overCompareChase').replace('{record}', sessionStartHighScore).replace('{diff}', diff);
+        overCompareEl.classList.add('chase');
+      }
+    } else {
+      overCompareEl.textContent = '';
+    }
+    // The screen recorder only captures canvas.captureStream() — it never
+    // sees this HTML overlay at all, DOM and canvas are separate layers to
+    // it. So the game-over card has to be redrawn onto the canvas itself
+    // (see drawGameOverCanvasCard) for a clip to actually show the score;
+    // stash the text/state it needs here rather than recomputing every
+    // frame.
+    goCanvasScore = score;
+    goCanvasTitle = tr('overTitle');
+    goCanvasSub = tr('overSub');
+    goCanvasCompareText = overCompareEl.textContent;
+    goCanvasCompareKind = overCompareEl.classList.contains('beat') ? 'beat' : (overCompareEl.classList.contains('chase') ? 'chase' : null);
+    goCanvasNewRecord = !newRecord.hidden;
+    // The run is over, so this IS the final, highest score it will reach —
+    // the right moment for the confetti-and-applause payoff, and safe to run
+    // the (slightly heavy) noise synthesis now that no toss timing depends
+    // on the main thread staying free.
+    if(sessionStartHighScore > 0 && score > sessionStartHighScore){
+      celebrateNewRecord();
+    }
+    // Briefly lock the two buttons so a reflexive tap held over from the
+    // toss controls can't dismiss the score screen before the player (or
+    // the camera) has had a moment to actually see it.
+    lockOverButtons();
+    setTimeout(function(){ overOverlay.hidden = false; }, 260);
+  }
+
+  function lockOverButtons(){
+    var lockMs = 700;
+    backBtnOver.disabled = true;
+    retryBtn.disabled = true;
+    setTimeout(function(){
+      backBtnOver.disabled = false;
+      retryBtn.disabled = false;
+    }, lockMs);
+  }
+
+  // ---------- input ----------
+  window.addEventListener('keydown', function(e){
+    // Typing into a text field (the player-name box) should behave like a
+    // normal text field — otherwise P/0/arrows/space/enter get hijacked as
+    // game shortcuts and the player can't even type those letters.
+    var tag = e.target && e.target.tagName;
+    if(tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if(TARGETS[e.key] || e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
+      e.preventDefault();
+      handleKey(e.key);
+    } else if(e.key === '0' || e.code === 'Digit0' || e.code === 'Numpad0'){
+      e.preventDefault();
+      handleTrick();
+    } else if(e.key === 'p' || e.key === 'P' || e.key === 'Escape'){
+      e.preventDefault();
+      togglePause();
+    } else if(state === 'start' && (e.key === ' ' || e.key === 'Enter')){
+      e.preventDefault();
+      enterGameScreen();
+    } else if(state === 'ready' && (e.key === ' ' || e.key === 'Enter')){
+      e.preventDefault();
+      startGame();
+    }
+  }, { passive:false });
+
+  dkeys.forEach(function(btn){
+    btn.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      handleKey(btn.dataset.key);
+    });
+  });
+
+  trickBtn.addEventListener('pointerdown', function(e){
+    e.preventDefault();
+    handleTrick();
+  });
+
+  // character-style picker on the start screen — each style remembers its
+  // own player-given name (falling back to the style's built-in name), since
+  // the two are meant as separate rival personas, not one shared identity.
+  var styleCards = document.querySelectorAll('.style-card');
+  var playerNameInput = document.getElementById('playerNameInput');
+  var playerTag = document.getElementById('playerTag');
+  function nameStorageKey(styleKey){ return 'vtb_name_' + styleKey; }
+  function loadPlayerName(styleKey){
+    try{
+      var saved = localStorage.getItem(nameStorageKey(styleKey));
+      if(saved) return saved;
+    }catch(e){}
+    return charDefaultName(styleKey);
+  }
+  function savePlayerName(styleKey, name){
+    try{ localStorage.setItem(nameStorageKey(styleKey), name); }catch(e){}
+  }
+  function currentPlayerName(){
+    var v = playerNameInput.value.trim();
+    return v || charDefaultName(charStyle);
+  }
+  function updatePlayerTag(){
+    playerTag.textContent = '🎮 ' + currentPlayerName();
+  }
+  function updateStyleCards(){
+    styleCards.forEach(function(card){
+      card.classList.toggle('selected', card.dataset.style === charStyle);
+    });
+  }
+  styleCards.forEach(function(card){
+    card.addEventListener('click', function(){
+      charStyle = card.dataset.style;
+      saveStyle();
+      updateStyleCards();
+      playerNameInput.value = loadPlayerName(charStyle);
+      updatePlayerTag();
+    });
+  });
+  playerNameInput.addEventListener('input', function(){
+    savePlayerName(charStyle, playerNameInput.value.trim());
+    updatePlayerTag();
+  });
+  document.querySelectorAll('.style-preview').forEach(function(c){
+    drawStylePreview(c.getContext('2d'), c.dataset.style);
+  });
+  updateStyleCards();
+  playerNameInput.value = loadPlayerName(charStyle);
+  updatePlayerTag();
+
+  startBtn.addEventListener('click', enterGameScreen);
+  confirmStartBtn.addEventListener('click', startGame);
+  backBtnReady.addEventListener('click', backToStart);
+  retryBtn.addEventListener('click', startGame);
+  pauseBtn.addEventListener('click', togglePause);
+  resumeBtn.addEventListener('click', resumeGame);
+  backBtnPause.addEventListener('click', backToStart);
+  backBtnOver.addEventListener('click', backToStart);
+  muteBtn.addEventListener('click', function(){
+    muted = !muted;
+    muteBtn.textContent = muted ? '🔇' : '🔊';
+    try{ localStorage.setItem('vtb_muted', muted ? '1':'0'); }catch(e){}
+    if(!muted){
+      ensureAudio();
+      // Covers the edge case where the player started muted, so the music
+      // loop never got a chance to spin up in startGame() — kick it off now
+      // that sound is allowed (no-op if it's already running).
+      if(state !== 'start') startMusic();
+    }
+  });
+
+  langBtn.addEventListener('click', function(){
+    lang = (lang === 'vi') ? 'en' : 'vi';
+    try{ localStorage.setItem('vtb_lang', lang); }catch(e){}
+    applyLanguage();
+  });
+
+  if(recordSupported) recordBtn.hidden = false;
+  recordBtn.addEventListener('click', function(){
+    if(recording) stopRecording(); else startRecording();
+  });
+
+  // Keep keyboard focus on the game canvas: a click/tap anywhere on the
+  // card (dpad included) should never leave arrow keys pointed at nothing.
+  document.querySelector('.card').addEventListener('pointerdown', function(){
+    focusGame();
+  });
+  window.addEventListener('load', focusGame);
+  focusGame();
+
+  // Switching away from the app must hard-stop the background music, not
+  // just pause the toss clock — background audio left running behind
+  // another app (or worse, bleeding into a phone call) is a real problem,
+  // not just a minor rough edge. document.visibilitychange is one signal
+  // for this, but Android WebView doesn't reliably fire it just because the
+  // hosting Activity itself went to background — so MainActivity.java also
+  // calls these same two hooks directly from onPause()/onResume() as the
+  // guaranteed path. Both routes land on the same idempotent functions.
+  function onAppBackground(){
+    try{ pauseGame(); }catch(e){}
+    try{ if(actx && actx.state === 'running') actx.suspend(); }catch(e){}
+  }
+  function onAppForeground(){
+    try{ if(actx && actx.state === 'suspended') actx.resume(); }catch(e){}
+  }
+  window.__vtbOnBackground = onAppBackground;
+  window.__vtbOnForeground = onAppForeground;
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden) onAppBackground();
+    else onAppForeground();
+  });
+
+  // ---------- drawing ----------
+  function fitCanvas(){
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+    var pw = Math.max(1, Math.round(rect.width*dpr));
+    var ph = Math.max(1, Math.round(rect.height*dpr));
+    if(canvas.width !== pw || canvas.height !== ph){
+      canvas.width = pw; canvas.height = ph;
+    }
+    ctx.setTransform(pw/W, 0, 0, ph/H, 0, 0);
+  }
+
+  // Field size is driven purely by the card's own width (see .field-wrap's
+  // aspect-ratio in CSS) — no JS shrinks it to fit the viewport height, so
+  // the play field itself stays as large as possible. On a short screen
+  // this can push the trick button/d-pad (and, on the start screen, the
+  // "Vào game" button) below the fold — the player is expected to scroll
+  // to see them, same as before the field ever got this big. The two-step
+  // start flow (enterGameScreen -> readyOverlay -> startGame) means the
+  // ball never drops until the player deliberately confirms, so needing a
+  // scroll first is no longer the "no time to react" problem it once was.
+  window.addEventListener('resize', fitCanvas);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', fitCanvas);
+  }
+
+  function css(varName){
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+
+  // Mirrors the HTML #overOverlay game-over card onto the canvas itself.
+  // canvas.captureStream() (used for the in-app screen recording) only ever
+  // sees pixels actually drawn on this canvas — it has no idea the DOM
+  // overlay on top of it exists — so without this, a recorded clip ends
+  // right as the ball drops and never shows the score at all. Drawn every
+  // frame while state === 'gameover', which costs nothing when not
+  // recording since the real HTML card is what the player actually sees,
+  // sitting visually on top of this.
+  function drawGameOverCanvasCard(){
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, 0, W, H);
+
+    var panelW = W*0.82, panelH = goCanvasCompareText ? 210 : 178;
+    var panelX = (W-panelW)/2, panelY = H*0.30;
+    ctx.fillStyle = css('--overlay-bg');
+    roundRect(panelX, panelY, panelW, panelH, 22);
+    ctx.fill();
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+
+    ctx.fillStyle = css('--ink');
+    ctx.font = "800 20px 'Manrope', sans-serif";
+    ctx.fillText(goCanvasTitle, CENTER_X, panelY + 38);
+
+    ctx.font = "800 58px 'Bungee', sans-serif";
+    ctx.fillText(String(goCanvasScore), CENTER_X, panelY + 104);
+
+    ctx.fillStyle = css('--ink-soft');
+    ctx.font = "600 13px 'Manrope', sans-serif";
+    ctx.fillText(goCanvasSub, CENTER_X, panelY + 128);
+
+    var nextY = panelY + 128;
+    if(goCanvasCompareText){
+      nextY += 26;
+      ctx.fillStyle = css(goCanvasCompareKind === 'beat' ? '--success' : '--accent-strong');
+      ctx.font = "800 14px 'Manrope', sans-serif";
+      ctx.fillText(goCanvasCompareText, CENTER_X, nextY);
+    }
+    if(goCanvasNewRecord){
+      nextY += 24;
+      ctx.fillStyle = css('--success');
+      ctx.font = "800 13px 'Manrope', sans-serif";
+      ctx.fillText(tr('newRecord'), CENTER_X, nextY);
+    }
+    ctx.restore();
+  }
+
+  // A small, always-visible running-score badge pinned in the top-left
+  // corner of the field, drawn fresh every frame while playing. The HTML
+  // scoreboard above the field already shows this number, but the player's
+  // eyes never leave the ball while playing — without something inside the
+  // field itself, the score only actually registers once the ball drops and
+  // the game-over card appears, which is exactly the "I only find out too
+  // late" complaint this fixes. Being drawn on the canvas also means a
+  // screen recording (canvas.captureStream() only, never the DOM) shows it
+  // too, same reasoning as drawGameOverCanvasCard().
+  function drawLiveScoreHud(){
+    ctx.save();
+    ctx.font = "800 24px 'Bungee', sans-serif";
+    var label = String(score);
+    var textW = ctx.measureText(label).width;
+    var padX = 22, padY = 12;
+    var pillW = textW + padX*2, pillH = 24 + padY*2;
+    var cx = 20 + pillW/2, cy = 34;
+
+    // A quick punch-scale right when the score changes, so an increment is
+    // felt, not just quietly updated.
+    var popT = (performance.now() - scoreBadgePopAt) / 220;
+    var scale = (popT >= 0 && popT < 1) ? 1 + (1-popT) * 0.32 : 1;
+
+    ctx.translate(cx, cy);
+    ctx.scale(scale, scale);
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    roundRect(-pillW/2, -pillH/2, pillW, pillH, pillH/2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, 0, 1);
+    ctx.restore();
+  }
+
+  // The little "+1"/"+2"/"+3" that floats up from the exact spot the ball
+  // was just touched and fades out — the most immediate possible feedback
+  // for "you just scored, and here's how much", right where the player is
+  // already looking.
+  function updateAndDrawScorePopups(){
+    if(!scorePopups.length) return;
+    var now = performance.now();
+    for(var i = scorePopups.length - 1; i >= 0; i--){
+      var p = scorePopups[i];
+      var t = (now - p.start) / 650;
+      if(t >= 1){ scorePopups.splice(i, 1); continue; }
+      ctx.save();
+      ctx.globalAlpha = 1 - t;
+      ctx.fillStyle = css('--success');
+      ctx.font = "800 20px 'Manrope', sans-serif";
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('+' + p.points, p.x, p.y - 28 - t*34);
+      ctx.restore();
+    }
+  }
+
+  // Two-tier grandstand + crowd + a sponsor-style banner, sitting behind the
+  // pitch and above the floodlights/hoarding drawn next. Purely decorative —
+  // none of it overlaps the play area (the character's head tops out well
+  // below the banner band).
+  function drawStadium(){
+    // roof fascia, with a few support struts hanging down like roof beams
+    ctx.fillStyle = css('--stand-roof');
+    ctx.fillRect(0, 0, W, 12);
+    for(var s=28; s<W; s+=64){
+      ctx.fillRect(s, 12, 5, 8);
+    }
+
+    // upper tier
+    ctx.fillStyle = css('--stand-1');
+    ctx.fillRect(0, 12, W, 78);
+    // lower tier, slightly lighter/closer, with a tier-lip shadow between them
+    ctx.fillStyle = 'rgba(0,0,0,0.16)';
+    ctx.fillRect(0, 88, W, 6);
+    ctx.fillStyle = css('--stand-2');
+    ctx.fillRect(0, 94, W, 74);
+
+    // crowd, packed across both tiers
+    for(var i=0;i<CROWD.length;i++){
+      var p = CROWD[i];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = p.c;
+      ctx.fill();
+    }
+
+    // sponsor-style banner strip along the foot of the stand
+    var bannerY = 168, bannerH = 30;
+    ctx.fillStyle = css('--banner-bg');
+    ctx.fillRect(0, bannerY, W, bannerH);
+    ctx.fillStyle = 'rgba(255,255,255,0.10)';
+    for(var bx2=0; bx2<W; bx2+=54){
+      ctx.fillRect(bx2, bannerY, 27, bannerH);
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.font = "800 17px 'Manrope', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⚽  KICK UP KING  ⚽', CENTER_X, bannerY + bannerH/2 + 1);
+  }
+
+  function drawBackground(){
+    var skyTop = css('--sky-top'), skyBottom = css('--sky-bottom');
+    var g = ctx.createLinearGradient(0,0,0,GROUND_Y);
+    g.addColorStop(0, skyTop);
+    g.addColorStop(1, skyBottom);
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,GROUND_Y);
+
+    drawStadium();
+
+    // paired floodlight glows for a lit, stadium-at-dusk feel — poles rise
+    // from the roofline so the rig reads as sitting above the stand
+    var floodSpots = [[W*0.13, 10], [W*0.87, 10]];
+    for(var f=0; f<floodSpots.length; f++){
+      var fx = floodSpots[f][0], fy = floodSpots[f][1];
+      ctx.fillStyle = 'rgba(10,14,12,0.35)';
+      ctx.fillRect(fx-2, 0, 4, 14);
+      ctx.beginPath();
+      ctx.arc(fx, fy, 4.5, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,250,225,0.9)';
+      ctx.fill();
+      var glow = ctx.createRadialGradient(fx, fy, 6, fx, fy, 210);
+      glow.addColorStop(0, 'rgba(255,255,255,0.22)');
+      glow.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0,0,W,GROUND_Y);
+    }
+
+    // pitch-side hoarding, right where the grass begins
+    var boardH = 13;
+    ctx.fillStyle = css('--ink');
+    ctx.fillRect(0, GROUND_Y-boardH, W, boardH);
+    ctx.fillStyle = 'rgba(255,255,255,0.09)';
+    for(var bx=6; bx<W; bx+=46){
+      ctx.fillRect(bx, GROUND_Y-boardH+3, 28, boardH-6);
+    }
+
+    // turf, mowed into alternating bands
+    var t1 = css('--turf-1'), t2 = css('--turf-2');
+    var stripeH = 22;
+    for(var y = GROUND_Y, i=0; y < H; y += stripeH, i++){
+      ctx.fillStyle = (i % 2 === 0) ? t1 : t2;
+      ctx.fillRect(0, y, W, stripeH);
+      var sheen = ctx.createLinearGradient(0, y, 0, y+stripeH);
+      sheen.addColorStop(0, 'rgba(255,255,255,0.07)');
+      sheen.addColorStop(1, 'rgba(0,0,0,0.06)');
+      ctx.fillStyle = sheen;
+      ctx.fillRect(0, y, W, stripeH);
+    }
+
+    // scattered grass flecks for an organic, less flat-looking lawn
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+    for(var k=0;k<GRASS_FLECKS.length;k++){
+      var fk = GRASS_FLECKS[k];
+      ctx.globalAlpha = fk.a;
+      ctx.beginPath();
+      ctx.ellipse(fk.x, fk.y, fk.w*0.5, 1.6, 0, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // halfway line + center circle, just enough to read as a real pitch
+    ctx.strokeStyle = css('--turf-line');
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(CENTER_X, GROUND_Y, 86, 0, Math.PI);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(CENTER_X, GROUND_Y, 3, 0, Math.PI*2);
+    ctx.fillStyle = css('--turf-line');
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, GROUND_Y+0.5);
+    ctx.lineTo(W, GROUND_Y+0.5);
+    ctx.stroke();
+  }
+
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  // Adds a soft top-light/bottom-shadow wash over whatever path is still
+  // active (i.e. right after a roundRect()/arc()+fill()), for a rounded,
+  // less flat-looking body part without needing per-color gradients.
+  function shadeCurrentPath(x, y, w, h){
+    ctx.save();
+    ctx.clip();
+    var sg = ctx.createLinearGradient(x, y, x, y+h);
+    sg.addColorStop(0, 'rgba(255,255,255,0.20)');
+    sg.addColorStop(0.45, 'rgba(255,255,255,0)');
+    sg.addColorStop(1, 'rgba(0,0,0,0.15)');
+    ctx.fillStyle = sg;
+    ctx.fillRect(x, y, w, h);
+    ctx.restore();
+  }
+
+  // A relaxed arm hanging from the shoulder with a natural elbow bend, drawn
+  // as two rounded strokes rather than a straight rectangle bolted to the
+  // torso. `side` is -1 (left) or 1 (right); `kick` (0..1, from limbAnim) adds
+  // only a small flinch on a shoulder-trap hit — a few px of lift and a
+  // slightly wider elbow — never a big reach toward the ball.
+  function drawArm(side, kick, shoulderY, xOffset, trimColor){
+    var shoulderX = CENTER_X + side*(38+(xOffset||0));
+    var sy = shoulderY - kick*4;
+    var upperLen = 32, foreLen = 30;
+    var aUpper = side * (12 + kick*6) * Math.PI/180;
+    var aFore  = side * (4 + kick*3) * Math.PI/180;
+    var elbowX = shoulderX + Math.sin(aUpper)*upperLen;
+    var elbowY = sy + Math.cos(aUpper)*upperLen;
+    var handX = elbowX + Math.sin(aFore)*foreLen;
+    var handY = elbowY + Math.cos(aFore)*foreLen;
+
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = css('--skin');
+    ctx.lineWidth = 16;
+    ctx.beginPath();
+    ctx.moveTo(shoulderX, sy);
+    ctx.lineTo(elbowX, elbowY);
+    ctx.lineTo(handX, handY);
+    ctx.stroke();
+    // soft top-light along the limb so it doesn't read totally flat
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(shoulderX - side*3, sy - 3);
+    ctx.lineTo(elbowX - side*3, elbowY - 3);
+    ctx.stroke();
+    // hand
+    ctx.fillStyle = css('--skin');
+    ctx.beginPath();
+    ctx.arc(handX, handY, 7.5, 0, Math.PI*2);
+    ctx.fill();
+    // sleeve trim right where the arm meets the jersey
+    ctx.strokeStyle = trimColor || css('--accent-strong');
+    ctx.lineWidth = 16;
+    ctx.beginPath();
+    ctx.moveTo(shoulderX, sy);
+    ctx.lineTo(shoulderX + Math.sin(aUpper)*13, sy + Math.cos(aUpper)*13);
+    ctx.stroke();
+  }
+
+  function limbAnim(part){
+    if(holdInfo){
+      // hold the balancing pose steady (with a faint wobble) for the whole trick
+      if(part === holdInfo.part) return 0.42 + 0.08*Math.sin(performance.now()/180);
+      return 0;
+    }
+    if(!hitAnim) return 0;
+    var el = (performance.now() - hitAnim.start)/220;
+    if(el >= 1) { hitAnim = null; return 0; }
+    if(hitAnim.part !== part) return 0;
+    return Math.sin(Math.min(el,1)*Math.PI);
+  }
+
+  function drawCharacter(){
+    var st = CHAR_STYLES[charStyle] || CHAR_STYLES.A;
+    var bob = (state === 'start' || state === 'ready' || state === 'gameover') ? Math.sin(idleT*2)*3 : 0;
+    var baseY = GROUND_Y + bob;
+
+    var hipY = baseY - 150;
+    var shoulderY = hipY - 118;
+    var headCY = shoulderY - 46;
+    var headR = 32 + st.headRDelta;
+
+    var leftKick = limbAnim('footLeft');
+    var rightKick = limbAnim('footRight');
+    var shoulderLeftKick = limbAnim('shoulderLeft');
+    var shoulderRightKick = limbAnim('shoulderRight');
+    var chestKick = limbAnim('chest');
+    var headKick = limbAnim('head');
+
+    // ground shadow
+    ctx.fillStyle = 'rgba(10,20,12,0.28)';
+    ctx.beginPath();
+    ctx.ellipse(CENTER_X, GROUND_Y+6, 58, 11, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // legs — thigh/shin, a sock cuff, then the boot
+    var lLift = leftKick*26, rLift = rightKick*26;
+    var lLen = 150-lLift, rLen = 150-rLift;
+
+    ctx.fillStyle = css('--skin');
+    roundRect(CENTER_X-38, hipY, 22, lLen, 10); ctx.fill();
+    shadeCurrentPath(CENTER_X-38, hipY, 22, lLen);
+    ctx.fillStyle = '#F4F6F2';
+    roundRect(CENTER_X-40, hipY+lLen-38, 26, 24, 7); ctx.fill();
+    ctx.fillStyle = css('--accent-strong');
+    ctx.fillRect(CENTER_X-40, hipY+lLen-29, 26, 5);
+    ctx.fillStyle = css('--shoe');
+    roundRect(CENTER_X-42, hipY+lLen-16, 30, 18, 6); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    roundRect(CENTER_X-38, hipY+lLen-11, 20, 3, 2); ctx.fill();
+
+    ctx.fillStyle = css('--skin');
+    roundRect(CENTER_X+16, hipY, 22, rLen, 10); ctx.fill();
+    shadeCurrentPath(CENTER_X+16, hipY, 22, rLen);
+    ctx.fillStyle = '#F4F6F2';
+    roundRect(CENTER_X+14, hipY+rLen-38, 26, 24, 7); ctx.fill();
+    ctx.fillStyle = css('--accent-strong');
+    ctx.fillRect(CENTER_X+14, hipY+rLen-29, 26, 5);
+    ctx.fillStyle = css('--shoe');
+    roundRect(CENTER_X+12, hipY+rLen-16, 30, 18, 6); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    roundRect(CENTER_X+18, hipY+rLen-11, 20, 3, 2); ctx.fill();
+
+    // shorts with side piping
+    ctx.fillStyle = st.shorts;
+    roundRect(CENTER_X-44, hipY-26, 88, 40, 14); ctx.fill();
+    shadeCurrentPath(CENTER_X-44, hipY-26, 88, 40);
+    ctx.fillStyle = css('--accent');
+    roundRect(CENTER_X-44, hipY-26, 6, 40, 3); ctx.fill();
+    roundRect(CENTER_X+38, hipY-26, 6, 40, 3); ctx.fill();
+
+    // torso — puffs out very slightly for a chest trap. Deliberately a
+    // different color from the target reticle (--accent): the reticle sits
+    // right on the chest, and a same-colored jersey underneath made it hard
+    // to spot in time. Jersey color, width and squad number come from the
+    // chosen character style.
+    ctx.fillStyle = st.jersey;
+    var lean = headKick*10;
+    var chestPuff = chestKick*4;
+    var torsoX = CENTER_X-40-chestPuff*0.3-st.torsoWDelta/2, torsoY = shoulderY-lean*0.4;
+    var torsoW = 80+chestPuff*0.6+st.torsoWDelta, torsoH = hipY-shoulderY+30;
+    roundRect(torsoX, torsoY, torsoW, torsoH, 18); ctx.fill();
+    shadeCurrentPath(torsoX, torsoY, torsoW, torsoH);
+    // faint vertical pinstripes for the styles that call for them — drawn
+    // clipped to the torso shape so they never spill past its rounded edges
+    if(st.stripes){
+      ctx.save();
+      roundRect(torsoX, torsoY, torsoW, torsoH, 18);
+      ctx.clip();
+      ctx.fillStyle = 'rgba(255,255,255,0.22)';
+      for(var stripeX = torsoX + 6; stripeX < torsoX + torsoW; stripeX += 11){
+        ctx.fillRect(stripeX, torsoY, 3, torsoH);
+      }
+      ctx.restore();
+    }
+    // collar
+    ctx.fillStyle = css('--card-bg');
+    ctx.beginPath();
+    ctx.moveTo(CENTER_X-9, torsoY+1);
+    ctx.lineTo(CENTER_X, torsoY+13);
+    ctx.lineTo(CENTER_X+9, torsoY+1);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = "700 20px 'Manrope', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(st.number, CENTER_X, (shoulderY + hipY)/2 + 8);
+
+    // chest-trap highlight
+    if(chestKick > 0.05){
+      ctx.fillStyle = css('--accent-strong');
+      ctx.globalAlpha = 0.55 * chestKick;
+      ctx.beginPath();
+      ctx.arc(PARTS.chest.x, PARTS.chest.y, 13, 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // arms — a relaxed, slightly bent resting pose (shoulder → elbow → hand
+    // near the hip), not a straight bar glued to the torso. A shoulder trap
+    // only gives a small flinch here (a few px of lift, a slightly wider
+    // elbow), never the whole arm reaching up — that reads as catching the
+    // ball with a hand instead of bumping it off the shoulder.
+    var armXOff = st.torsoWDelta/2;
+    drawArm(-1, shoulderLeftKick, shoulderY, armXOff, st.trim);
+    drawArm(1, shoulderRightKick, shoulderY, armXOff, st.trim);
+
+    // shoulder-trap highlights, right where the ball settles on each side
+    if(shoulderLeftKick > 0.05){
+      ctx.fillStyle = css('--accent');
+      ctx.globalAlpha = 0.85 * shoulderLeftKick;
+      ctx.beginPath();
+      ctx.arc(PARTS.shoulderLeft.x, PARTS.shoulderLeft.y - shoulderLeftKick*4, 11, 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+    if(shoulderRightKick > 0.05){
+      ctx.fillStyle = css('--accent');
+      ctx.globalAlpha = 0.85 * shoulderRightKick;
+      ctx.beginPath();
+      ctx.arc(PARTS.shoulderRight.x, PARTS.shoulderRight.y - shoulderRightKick*4, 11, 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // neck
+    ctx.fillStyle = css('--skin');
+    roundRect(CENTER_X-10, shoulderY-18, 20, 20, 6); ctx.fill();
+
+    // head
+    var headOffsetY = -headKick*16;
+    var hcx = CENTER_X, hcy = headCY+headOffsetY;
+    ctx.fillStyle = css('--skin');
+    ctx.beginPath();
+    ctx.arc(hcx, hcy, headR, 0, Math.PI*2);
+    ctx.fill();
+    shadeCurrentPath(hcx-headR, hcy-headR, headR*2, headR*2);
+    // hair, capping the top of the head
+    ctx.fillStyle = '#2B1C14';
+    ctx.beginPath();
+    ctx.moveTo(hcx, hcy);
+    ctx.arc(hcx, hcy, headR+1, -Math.PI*0.98, -Math.PI*0.02);
+    ctx.closePath();
+    ctx.fill();
+    // headband
+    ctx.fillStyle = st.trim;
+    ctx.fillRect(hcx-headR, hcy-6, headR*2, 9);
+    // eyebrows
+    ctx.strokeStyle = css('--ink');
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(hcx-16, hcy-1);
+    ctx.lineTo(hcx-7, hcy-4);
+    ctx.moveTo(hcx+7, hcy-4);
+    ctx.lineTo(hcx+16, hcy-1);
+    ctx.stroke();
+    // face
+    ctx.fillStyle = css('--ink');
+    ctx.beginPath();
+    ctx.arc(hcx-11, hcy+4, 2.6, 0, Math.PI*2);
+    ctx.arc(hcx+11, hcy+4, 2.6, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.beginPath();
+    ctx.arc(hcx-10, hcy+3, 0.8, 0, Math.PI*2);
+    ctx.arc(hcx+12, hcy+3, 0.8, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = css('--ink');
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.arc(hcx, hcy+11, 8, 0.15*Math.PI, 0.85*Math.PI);
+    ctx.stroke();
+
+    // a full, rậm beard for the styles that call for one — drawn low, from
+    // roughly mouth level down to the chin, so eyes/eyebrows/nose stay clear
+    // and only the jaw and lower lip read as bearded.
+    if(st.beard){
+      ctx.fillStyle = '#2B1C14';
+      ctx.beginPath();
+      ctx.moveTo(hcx-headR*0.6, hcy+headR*0.4);
+      ctx.quadraticCurveTo(hcx-headR*0.66, hcy+headR*0.85, hcx, hcy+headR*1.05);
+      ctx.quadraticCurveTo(hcx+headR*0.66, hcy+headR*0.85, hcx+headR*0.6, hcy+headR*0.4);
+      ctx.quadraticCurveTo(hcx, hcy+headR*0.62, hcx-headR*0.6, hcy+headR*0.4);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  function drawBall(){
+    // shadow on ground, scaled by height
+    var heightRatio = Math.max(0, Math.min(1, (GROUND_Y - ball.y) / (GROUND_Y - HEAD_HIT_Y)));
+    var shW = 30 - heightRatio*16;
+    var shA = 0.30 - heightRatio*0.16;
+    ctx.fillStyle = 'rgba(10,20,12,' + Math.max(0.06,shA) + ')';
+    ctx.beginPath();
+    ctx.ellipse(ball.x, GROUND_Y+4, shW, shW*0.32, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(ball.x, ball.y);
+    var spin = (ball.x*0.05 + ball.y*0.05);
+    ctx.rotate(spin);
+
+    // Flat white base rather than a shaded 3D sphere — the classic black/
+    // white ball reads as two flat colors first, roundness second.
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(0,0,BALL_R,0,Math.PI*2);
+    ctx.fill();
+
+    // The familiar pentagon-and-hexagon pattern: one black pentagon at the
+    // center, and one black kite-shaped patch reaching toward the rim from
+    // each of its five VERTICES (not its edges) — that alignment is what
+    // leaves a big white hexagon-shaped gap along each pentagon edge, which
+    // is what actually reads as "soccer ball" rather than a pinwheel.
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0,0,BALL_R,0,Math.PI*2);
+    ctx.clip();
+    ctx.fillStyle = '#1A1A1A';
+
+    var pr = BALL_R*0.42;
+    var verts = [];
+    for(var i=0;i<5;i++){
+      var a = -Math.PI/2 + i*(Math.PI*2/5);
+      verts.push([Math.cos(a)*pr, Math.sin(a)*pr]);
+    }
+    ctx.beginPath();
+    ctx.moveTo(verts[0][0], verts[0][1]);
+    for(i=1;i<5;i++) ctx.lineTo(verts[i][0], verts[i][1]);
+    ctx.closePath();
+    ctx.fill();
+
+    var rimR = BALL_R*0.93;
+    var spread = 0.27;
+    for(i=0;i<5;i++){
+      var vAngle = -Math.PI/2 + i*(Math.PI*2/5);
+      var o1x = Math.cos(vAngle-spread)*rimR, o1y = Math.sin(vAngle-spread)*rimR;
+      ctx.beginPath();
+      ctx.moveTo(verts[i][0], verts[i][1]);
+      ctx.lineTo(o1x, o1y);
+      ctx.arc(0,0,rimR, vAngle-spread, vAngle+spread);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // bold black outline — the single most important line for the ball to
+    // read clearly as "a soccer ball" rather than just a white disc
+    ctx.beginPath();
+    ctx.arc(0,0,BALL_R,0,Math.PI*2);
+    ctx.strokeStyle = '#1A1A1A';
+    ctx.lineWidth = Math.max(1.5, BALL_R*0.09);
+    ctx.stroke();
+
+    // a light gloss, just enough to keep it a sphere rather than a flat sticker
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(-BALL_R*0.36, -BALL_R*0.4, BALL_R*0.28, BALL_R*0.17, -0.5, 0, Math.PI*2);
+    ctx.fill();
+
+    // thin rim shade for a touch of roundness against the sky
+    ctx.beginPath();
+    ctx.arc(0,0,BALL_R,0,Math.PI*2);
+    ctx.strokeStyle = 'rgba(0,0,0,0.14)';
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function drawIndicator(){
+    if(state !== 'playing' || !toss || toss.resolved) return;
+    var el = toss._elapsed || 0;
+    var progress = Math.min(1, el / toss.T);
+    var inWindow = Math.abs(el - toss.T) <= toss.tol;
+    var scale = 0.85 + progress*0.35;
+    var x = 240, y = 56;
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.scale(scale,scale);
+    var bg = inWindow ? css('--success') : css('--card-bg');
+    var bd = inWindow ? css('--success') : css('--card-border');
+    var fg = inWindow ? '#ffffff' : css('--accent-strong');
+    ctx.fillStyle = bg;
+    ctx.strokeStyle = bd;
+    ctx.lineWidth = 2;
+    roundRect(-24,-22,48,44,14);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = fg;
+    ctx.font = "400 26px 'Bungee', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(ARROW_GLYPH[toss.required], 0, 2);
+
+    // countdown ring: fills up as the ball approaches contact time
+    ctx.beginPath();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = inWindow ? css('--success') : css('--accent');
+    ctx.globalAlpha = inWindow ? 1 : 0.55;
+    var startA = -Math.PI/2;
+    ctx.arc(0, 0, 33, startA, startA + Math.PI*2*progress);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  function drawTargetReticle(){
+    if(state !== 'playing' || !toss || toss.resolved) return;
+    var el = toss._elapsed || 0;
+    var inWindow = Math.abs(el - toss.T) <= toss.tol;
+    var pulse = inWindow ? (1 + 0.12*Math.sin(performance.now()/90)) : 1;
+    ctx.save();
+    ctx.translate(toss.targetX, toss.targetY);
+    ctx.scale(pulse, pulse);
+    ctx.strokeStyle = inWindow ? css('--success') : css('--accent');
+    ctx.lineWidth = inWindow ? 4 : 2.5;
+    ctx.globalAlpha = inWindow ? 0.9 : 0.55;
+    if(!inWindow) ctx.setLineDash([5,5]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 34, 0, Math.PI*2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  function drawHoldEffect(){
+    if(!holdInfo) return;
+    var heldFor = performance.now() - holdInfo.start;
+    var progress = Math.min(1, heldFor / holdInfo.duration);
+    var fade = heldFor < 150 ? heldFor/150 : (heldFor > holdInfo.duration-150 ? Math.max(0,(holdInfo.duration-heldFor)/150) : 1);
+
+    // glowing ring resting under the ball, shrinking as the hold counts down
+    ctx.save();
+    ctx.translate(holdInfo.x, holdInfo.y);
+    ctx.globalAlpha = 0.85 * fade;
+    ctx.strokeStyle = css('--success');
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, 24, -Math.PI/2, -Math.PI/2 + Math.PI*2*(1-progress));
+    ctx.stroke();
+    ctx.globalAlpha = 0.18 * fade;
+    ctx.fillStyle = css('--success');
+    ctx.beginPath();
+    ctx.ellipse(0, holdInfo.part === 'head' ? -2 : -4, 30, 10, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+
+    // floating caption
+    var floatY = holdInfo.y - 46 - Math.min(18, heldFor/60);
+    ctx.save();
+    ctx.globalAlpha = fade;
+    ctx.fillStyle = css('--success');
+    ctx.font = "400 15px 'Bungee', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(tr('trickCaption'), holdInfo.x, floatY);
+    ctx.restore();
+  }
+
+  function updateDpadCue(){
+    var active = (state === 'playing' && toss && !toss.resolved) ? toss.required : null;
+    dkeys.forEach(function(b){
+      b.classList.toggle('cue', b.dataset.key === active);
+    });
+  }
+
+  function loop(){
+    fitCanvas();
+    idleT += 1/60;
+
+    if(state === 'playing' && holdInfo){
+      var heldFor = performance.now() - holdInfo.start;
+      ball.x = holdInfo.x;
+      ball.y = holdInfo.y + Math.sin(heldFor/110) * 2.5;
+      if(heldFor >= holdInfo.duration){
+        var fx = holdInfo.x, fy = holdInfo.y;
+        holdInfo = null;
+        sfxFlick();
+        startToss(fx, fy, null);
+      }
+    } else if(state === 'playing' && toss && !toss.resolved){
+      updateBallFromToss();
+      if(ball.y - BALL_R > GROUND_Y + 6){
+        gameOver();
+      }
+    } else if(state === 'playing' && toss && toss.resolved){
+      updateBallFromToss();
+    }
+
+    ctx.clearRect(0,0,W,H);
+    drawBackground();
+    drawIndicator();
+    drawCharacter();
+    drawTargetReticle();
+    drawBall();
+    drawHoldEffect();
+    updateAndDrawConfetti(1/60);
+    updateAndDrawScorePopups();
+    if(state === 'playing') drawLiveScoreHud();
+    if(state === 'gameover') drawGameOverCanvasCard();
+    updateDpadCue();
+
+    requestAnimationFrame(loop);
+  }
+
+  applyLanguage();
+
+  fitCanvas();
+  // Fonts/scrollbars can settle a beat after first paint on some devices;
+  // re-measure shortly after load so the canvas resolution matches its
+  // final on-screen size.
+  window.addEventListener('load', fitCanvas);
+  setTimeout(fitCanvas, 300);
+  requestAnimationFrame(loop);
+})();
+</script>
