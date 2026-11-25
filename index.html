@@ -1,3 +1,10 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://socialchain.app https://backend.appstudio-u7cm9zhmha0ruwv8.piappengine.com">
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
 <title>Kick Up King</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Manrope:wght@400;600;700;800&display=swap">
 <style>
@@ -550,6 +557,7 @@
       <div class="overlay" id="startOverlay">
         <div class="overlay-scroll">
           <h2 id="startTitle">Sẵn sàng tâng bóng?</h2>
+          <p id="piStatus" hidden style="margin:4px 0 10px;font-size:13px;font-weight:700;color:var(--accent-strong);text-align:center"></p>
           <div class="style-pick">
             <div class="style-pick-label" id="stylePickLabel">Chọn phong cách của bạn</div>
             <div class="style-picker">
@@ -2829,5 +2837,58 @@
   window.addEventListener('load', fitCanvas);
   setTimeout(fitCanvas, 300);
   requestAnimationFrame(loop);
+})();
+</script>
+
+<script>
+/* Pi Network: dang nhap Pi (Pi Auth) qua App Studio.
+   Ngoai Pi Browser (vd. Chrome) khong co window.Pi -> bo qua, game van chay binh thuong. */
+(function(){
+  var LOGIN_URL = 'https://backend.appstudio-u7cm9zhmha0ruwv8.piappengine.com/pi/auth/v1/login';
+  window.piSession = null; // { sessionToken, user:{uid, username} } - chi giu trong bo nho
+
+  function onIncompletePaymentFound(payment){
+    // Game chua ban vat pham nao, nen chua co thanh toan dang do de xu ly.
+    console.log('Pi incomplete payment:', payment && payment.identifier);
+  }
+
+  function showUser(username){
+    var el = document.getElementById('piStatus');
+    if(el){ el.textContent = 'Pi: @' + username; el.hidden = false; }
+    var input = document.getElementById('playerNameInput');
+    if(input && !input.value){
+      input.value = username.slice(0, 18);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+
+  function withTimeout(promise, ms){
+    return Promise.race([promise, new Promise(function(_, reject){
+      setTimeout(function(){ reject(new Error('timeout')); }, ms);
+    })]);
+  }
+
+  async function signIn(){
+    if(!window.Pi) return; // khong phai Pi Browser hoac SDK chua tai duoc
+    try {
+      await window.Pi.init({ version: '2.0' });
+      var auth = await withTimeout(window.Pi.authenticate(['username'], onIncompletePaymentFound), 60000);
+      // Chi giu accessToken; khong tin uid/username tu trinh duyet.
+      var res = await fetch(LOGIN_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessToken: auth.accessToken })
+      });
+      if(!res.ok) throw new Error('App Studio login HTTP ' + res.status);
+      var data = await res.json();
+      window.piSession = { sessionToken: data.sessionToken, user: data.user };
+      if(data.user && data.user.username) showUser(data.user.username);
+    } catch(err){
+      console.warn('Pi sign-in skipped:', err && err.message);
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', signIn);
+  else signIn();
 })();
 </script>
