@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://socialchain.app https://backend.appstudio-u7cm9zhmha0ruwv8.piappengine.com">
+<meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://socialchain.app https://kick-up-king-api.hoangsondbp.workers.dev">
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 <title>Kick Up King</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Manrope:wght@400;600;700;800&display=swap">
@@ -580,6 +580,7 @@
             <p>Bóng bay tới đâu, bấm đúng phím lúc bóng chạm người — càng lâu càng khó!</p>
             <p>Phím <b>P</b> hoặc nút ⏸ để tạm dừng khi cần</p>
           </div>
+          <button class="secondary lb-open" id="lbOpenStart" type="button">🏆 Bảng xếp hạng</button>
           <button class="primary" id="startBtn" type="button">Vào game</button>
         </div>
       </div>
@@ -618,6 +619,8 @@
           <button class="secondary" id="backBtnOver" type="button">← Chọn lại</button>
           <button class="primary" id="retryBtn" type="button">Chơi lại</button>
         </div>
+        <div class="lb-over-rank" id="lbOverRank" hidden></div>
+        <button class="secondary lb-open" id="lbOpenOver" type="button">🏆 Bảng xếp hạng</button>
       </div>
     </div>
 
@@ -891,6 +894,7 @@
     }
   };
   var lang = 'en';
+  window.kukGetLang = function(){ return lang; };
   try {
     var navLang = (navigator.language || '').toLowerCase();
     if(navLang.indexOf('vi') === 0) lang = 'vi';
@@ -914,6 +918,7 @@
   // button label) are refreshed by calling their own update function
   // rather than duplicating their logic here.
   function applyLanguage(){
+    if(window.kukLB) window.kukLB.applyLang();
     gameTitleEl.textContent = tr('title');
     taglineEl.textContent = tr('tagline');
     scoreLabelEl.textContent = tr('scoreLabel');
@@ -1774,6 +1779,7 @@
     focusGame();
     state = 'playing';
     score = 0;
+    if(window.kukLB) window.kukLB.onStart();
     scoreVal.textContent = '0';
     currentLevelIdx = 0;
     if(levelToastTimer) clearTimeout(levelToastTimer);
@@ -1855,6 +1861,7 @@
     if(state !== 'playing') return;
     state = 'gameover';
     sfxDrop();
+    if(window.kukLB) window.kukLB.onEnd(score);
     finalScoreEl.textContent = score;
     // Re-trigger the pop-in animation every time (removing then re-adding a
     // class doesn't restart a CSS animation unless the browser is forced to
@@ -2840,55 +2847,197 @@
 })();
 </script>
 
-<script>
-/* Pi Network: dang nhap Pi (Pi Auth) qua App Studio.
-   Ngoai Pi Browser (vd. Chrome) khong co window.Pi -> bo qua, game van chay binh thuong. */
-(function(){
-  var LOGIN_URL = 'https://backend.appstudio-u7cm9zhmha0ruwv8.piappengine.com/pi/auth/v1/login';
-  window.piSession = null; // { sessionToken, user:{uid, username} } - chi giu trong bo nho
+<style>
+  .lb-open{ margin-top:4px; font-size:13px !important; padding:8px 18px !important; }
+  .lb-over-rank{ font-family:'Manrope',sans-serif; font-weight:800; font-size:13px; color:var(--accent-strong); }
+  .lb-modal{ position:fixed; inset:0; z-index:1000; display:flex; align-items:center; justify-content:center;
+    background:rgba(10,20,12,0.55); padding:16px; }
+  .lb-modal[hidden]{ display:none !important; }
+  .lb-card{ width:100%; max-width:380px; max-height:86vh; display:flex; flex-direction:column;
+    background:var(--card-bg); color:var(--ink); border:2px solid var(--card-border); border-radius:18px;
+    box-shadow:0 18px 40px -18px var(--shadow-color); font-family:'Manrope',sans-serif; overflow:hidden; }
+  .lb-head{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px 8px; }
+  .lb-head h3{ margin:0; font-family:'Bungee','Manrope',sans-serif; font-size:18px; color:var(--accent-strong); font-weight:400; }
+  .lb-x{ border:none; background:none; font-size:22px; line-height:1; color:var(--ink-soft); cursor:pointer; padding:4px 8px; }
+  .lb-tabs{ display:flex; gap:6px; padding:0 16px 10px; }
+  .lb-tab{ flex:1; font-family:'Manrope',sans-serif; font-weight:800; font-size:13px; padding:8px 0; border-radius:999px;
+    border:2px solid var(--card-border); background:var(--chip-bg); color:var(--ink); cursor:pointer; }
+  .lb-tab[aria-selected="true"]{ background:var(--accent); border-color:var(--accent-strong); color:#fff; }
+  .lb-list{ list-style:none; margin:0; padding:0 10px; overflow-y:auto; flex:1; }
+  .lb-row{ display:flex; align-items:center; gap:10px; padding:8px 8px; border-bottom:1px solid var(--card-border); font-size:14px; }
+  .lb-row:last-child{ border-bottom:none; }
+  .lb-rank{ width:30px; text-align:center; font-weight:800; color:var(--ink-soft); }
+  .lb-row.top1 .lb-rank, .lb-row.top2 .lb-rank, .lb-row.top3 .lb-rank{ font-size:18px; }
+  .lb-name{ flex:1; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:left; }
+  .lb-score{ font-weight:800; font-variant-numeric:tabular-nums; }
+  .lb-row.mine{ background:var(--chip-bg); border-radius:10px; }
+  .lb-msg{ padding:22px 16px; text-align:center; color:var(--ink-soft); font-size:14px; }
+  .lb-me{ padding:10px 16px 14px; border-top:2px solid var(--card-border); font-size:13px; font-weight:700; text-align:center; color:var(--ink-soft); }
+  .lb-me b{ color:var(--accent-strong); }
+</style>
 
+<div class="lb-modal" id="lbModal" hidden role="dialog" aria-modal="true" aria-labelledby="lbTitle">
+  <div class="lb-card">
+    <div class="lb-head">
+      <h3 id="lbTitle">Bảng xếp hạng</h3>
+      <button class="lb-x" id="lbClose" type="button" aria-label="Đóng">×</button>
+    </div>
+    <div class="lb-tabs" role="tablist">
+      <button class="lb-tab" id="lbTabWeek" type="button" role="tab" aria-selected="true">Tuần này</button>
+      <button class="lb-tab" id="lbTabAll" type="button" role="tab" aria-selected="false">Mọi thời đại</button>
+    </div>
+    <ol class="lb-list" id="lbList"></ol>
+    <div class="lb-me" id="lbMe" hidden></div>
+  </div>
+</div>
+
+<script>
+/* Kick Up King - dang nhap Pi + bang xep hang.
+   Trinh duyet chi gui accessToken cho may chu rieng (Cloudflare Worker); may chu tu
+   doi voi App Studio de lay danh tinh that. Ngoai Pi Browser game van choi binh thuong. */
+(function(){
+  var API_BASE = 'https://kick-up-king-api.hoangsondbp.workers.dev';
+  var session = null;      // { token, username } - chi giu trong bo nho
+  var runId = null;
+  var runPending = null;
+  var period = 'week';
+
+  var TXT = {
+    vi: { open:'🏆 Bảng xếp hạng', title:'Bảng xếp hạng', week:'Tuần này', all:'Mọi thời đại', close:'Đóng',
+          loading:'Đang tải…', empty:'Chưa có ai — hãy là người đầu tiên!', error:'Chưa tải được bảng xếp hạng, thử lại sau nhé.',
+          signin:'Mở game trong Pi Browser để đăng nhập Pi và lên bảng.', mine:'Hạng của bạn: <b>#{rank}</b> · {score} điểm',
+          unranked:'Bạn chưa có điểm trong bảng này — chơi một ván nhé!', overRank:'🏆 Hạng tuần #{week} · Mọi thời đại #{all}',
+          rejected:'Điểm ván này không được ghi nhận.' },
+    en: { open:'🏆 Leaderboard', title:'Leaderboard', week:'This week', all:'All time', close:'Close',
+          loading:'Loading…', empty:'No one yet — be the first!', error:'Couldn’t load the leaderboard. Please try again later.',
+          signin:'Open the game in Pi Browser and sign in with Pi to join the board.', mine:'Your rank: <b>#{rank}</b> · {score} pts',
+          unranked:'You have no score on this board yet — play a round!', overRank:'🏆 Weekly #{week} · All-time #{all}',
+          rejected:'This round’s score was not recorded.' }
+  };
+  function t(k){ var l = (window.kukGetLang && window.kukGetLang()) || 'en'; return (TXT[l] || TXT.en)[k]; }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function $(id){ return document.getElementById(id); }
+
+  function api(path, opts){
+    opts = opts || {};
+    var headers = {};
+    if(opts.body) headers['Content-Type'] = 'application/json';
+    if(session) headers['Authorization'] = 'Bearer ' + session.token;
+    return fetch(API_BASE + path, { method: opts.method || 'GET', headers: headers,
+      body: opts.body ? JSON.stringify(opts.body) : undefined })
+      .then(function(r){ return r.json().then(function(d){ if(!r.ok) throw new Error(d && d.error || ('HTTP ' + r.status)); return d; }); });
+  }
+
+  /* ---------- dang nhap Pi ---------- */
   function onIncompletePaymentFound(payment){
-    // Game chua ban vat pham nao, nen chua co thanh toan dang do de xu ly.
     console.log('Pi incomplete payment:', payment && payment.identifier);
   }
-
+  function withTimeout(p, ms){
+    return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('timeout')); }, ms); })]);
+  }
   function showUser(username){
-    var el = document.getElementById('piStatus');
+    var el = $('piStatus');
     if(el){ el.textContent = 'Pi: @' + username; el.hidden = false; }
-    var input = document.getElementById('playerNameInput');
-    if(input && !input.value){
-      input.value = username.slice(0, 18);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    }
+    var input = $('playerNameInput');
+    if(input && !input.value){ input.value = username.slice(0, 18); input.dispatchEvent(new Event('input', { bubbles: true })); }
   }
-
-  function withTimeout(promise, ms){
-    return Promise.race([promise, new Promise(function(_, reject){
-      setTimeout(function(){ reject(new Error('timeout')); }, ms);
-    })]);
-  }
-
   async function signIn(){
-    if(!window.Pi) return; // khong phai Pi Browser hoac SDK chua tai duoc
-    try {
+    if(!window.Pi || !API_BASE) return;
+    try{
       await window.Pi.init({ version: '2.0' });
       var auth = await withTimeout(window.Pi.authenticate(['username'], onIncompletePaymentFound), 60000);
-      // Chi giu accessToken; khong tin uid/username tu trinh duyet.
-      var res = await fetch(LOGIN_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accessToken: auth.accessToken })
-      });
-      if(!res.ok) throw new Error('App Studio login HTTP ' + res.status);
-      var data = await res.json();
-      window.piSession = { sessionToken: data.sessionToken, user: data.user };
-      if(data.user && data.user.username) showUser(data.user.username);
-    } catch(err){
+      // Chi gui accessToken; may chu tu xac minh voi App Studio.
+      var d = await api('/api/auth', { method: 'POST', body: { accessToken: auth.accessToken } });
+      session = { token: d.token, username: d.username };
+      showUser(d.username);
+    }catch(err){
       console.warn('Pi sign-in skipped:', err && err.message);
     }
   }
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', signIn);
-  else signIn();
+  /* ---------- van choi ---------- */
+  function onStart(){
+    runId = null;
+    $('lbOverRank').hidden = true;
+    if(!session) return;
+    runPending = api('/api/run/start', { method: 'POST' })
+      .then(function(d){ runId = d.runId; })
+      .catch(function(e){ console.warn('run start failed', e.message); });
+  }
+  function onEnd(score){
+    if(!session) return;
+    Promise.resolve(runPending).then(function(){
+      if(!runId) return;
+      var id = runId; runId = null;
+      return api('/api/run/finish', { method: 'POST', body: { runId: id, score: score } }).then(function(d){
+        var el = $('lbOverRank');
+        if(d.accepted && score > 0 && d.rankWeek){
+          el.textContent = t('overRank').replace('{week}', d.rankWeek).replace('{all}', d.rankAll);
+          el.hidden = false;
+        } else if(d.accepted === false){
+          el.textContent = t('rejected'); el.hidden = false;
+        }
+      });
+    }).catch(function(e){ console.warn('run finish failed', e && e.message); });
+  }
+
+  /* ---------- bang xep hang ---------- */
+  var MEDALS = ['🥇','🥈','🥉'];
+  function render(d){
+    var list = $('lbList'), me = $('lbMe');
+    if(!d.top.length){ list.innerHTML = '<li class="lb-msg">' + esc(t('empty')) + '</li>'; }
+    else {
+      list.innerHTML = d.top.map(function(r){
+        var mine = d.me && d.me.rank === r.rank && d.me.username === r.username;
+        return '<li class="lb-row top' + r.rank + (mine ? ' mine' : '') + '"><span class="lb-rank">' +
+          (MEDALS[r.rank - 1] || r.rank) + '</span><span class="lb-name">@' + esc(r.username) +
+          '</span><span class="lb-score">' + r.score + '</span></li>';
+      }).join('');
+    }
+    if(!session){ me.textContent = t('signin'); }
+    else if(d.me && d.me.rank){ me.innerHTML = t('mine').replace('{rank}', d.me.rank).replace('{score}', d.me.score); }
+    else { me.textContent = t('unranked'); }
+    me.hidden = false;
+  }
+  function load(){
+    var list = $('lbList');
+    $('lbTabWeek').setAttribute('aria-selected', period === 'week');
+    $('lbTabAll').setAttribute('aria-selected', period === 'all');
+    $('lbMe').hidden = true;
+    if(!API_BASE){ list.innerHTML = '<li class="lb-msg">' + esc(t('error')) + '</li>'; return; }
+    list.innerHTML = '<li class="lb-msg">' + esc(t('loading')) + '</li>';
+    var want = period;
+    api('/api/leaderboard?period=' + want).then(function(d){ if(want === period) render(d); })
+      .catch(function(){ if(want === period) list.innerHTML = '<li class="lb-msg">' + esc(t('error')) + '</li>'; });
+  }
+  function open(){ $('lbModal').hidden = false; load(); }
+  function close(){ $('lbModal').hidden = true; }
+
+  function applyLang(){
+    ['lbOpenStart','lbOpenOver'].forEach(function(id){ var b = $(id); if(b) b.textContent = t('open'); });
+    $('lbTitle').textContent = t('title');
+    $('lbTabWeek').textContent = t('week');
+    $('lbTabAll').textContent = t('all');
+    $('lbClose').setAttribute('aria-label', t('close'));
+    if(!$('lbModal').hidden) load();
+  }
+
+  window.kukLB = { onStart: onStart, onEnd: onEnd, applyLang: applyLang };
+
+  function init(){
+    // Nut cua bang xep hang chan su kien de khong lam game tuong la bam phim choi
+    ['lbOpenStart','lbOpenOver'].forEach(function(id){
+      var b = $(id); if(b) b.addEventListener('click', function(e){ e.stopPropagation(); open(); });
+    });
+    $('lbClose').addEventListener('click', close);
+    $('lbModal').addEventListener('click', function(e){ if(e.target === this) close(); });
+    $('lbTabWeek').addEventListener('click', function(){ period = 'week'; load(); });
+    $('lbTabAll').addEventListener('click', function(){ period = 'all'; load(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !$('lbModal').hidden) close(); });
+    applyLang();
+    signIn();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
 </script>
