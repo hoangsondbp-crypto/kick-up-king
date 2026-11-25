@@ -882,7 +882,11 @@
       charNames: { A: 'Lion', B: 'Little Fox' }
     }
   };
-  var lang = 'vi';
+  var lang = 'en';
+  try {
+    var navLang = (navigator.language || '').toLowerCase();
+    if(navLang.indexOf('vi') === 0) lang = 'vi';
+  } catch(e){}
   try {
     var savedLang = localStorage.getItem('vtb_lang');
     if(savedLang === 'en' || savedLang === 'vi') lang = savedLang;
